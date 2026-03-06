@@ -2,7 +2,7 @@
 
 # Project Overview
 
-OpenClaw is a powerful AI assistant that can run on your own hardware. First released in November 2025, it has released dozens of versions as of March 2026. While powerful, it also comes with significant security risks. According to ZoomEye mapping data, as of March 2, 2026, there are 63,026 identifiable OpenClaw instances worldwide, and the GitHub Advisory Database has recorded as many as 245 related vulnerabilities, highlighting the coexistence of rapid growth and security challenges. For some research findings on its security, [click here](docs/OpenClaw_Security_Analysis_2026.md) to view.
+OpenClaw is a powerful AI assistant that can run on your own hardware. First released in November 2025, it has released dozens of versions as of March 2026. While powerful, it also comes with significant security risks. According to ZoomEye mapping data, as of March 4, 2026, there are 63,026 identifiable OpenClaw instances worldwide, and the GitHub Advisory Database has recorded as many as 245 related vulnerabilities, highlighting the coexistence of rapid growth and security challenges. For some research findings on its security, [click here](docs/OpenClaw_Security_Analysis_2026.md) to view.
 
 This project is an internal team summary of OpenClaw's full-lifecycle security practice guide, covering installation, configuration, daily use, and maintenance, helping you maintain security while enjoying OpenClaw's powerful capabilities.
 

@@ -49,7 +49,7 @@ There is a periodic gap between the rate of attack surface expansion and the pac
 
 ## 3.1 Global Exposure Scale
 
-According to ZoomEye mapping data statistics, as of March 2, 2026, there are 63,026 identifiable OpenClaw instances worldwide.
+According to ZoomEye mapping data statistics, as of March 4, 2026, there are 63,026 identifiable OpenClaw instances worldwide.
 
 ![zoomeye_dork](./images/zoomeye_dork.png)
 

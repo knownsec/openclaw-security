@@ -49,7 +49,7 @@ OpenClaw 采用分层架构：
 
 ## 3.1 全球暴露规模
 
-根据 ZoomEye 测绘数据统计，截至2026年3月2日，全球可识别 OpenClaw 实例数量为 63,026 个。
+根据 ZoomEye 测绘数据统计，截至2026年3月4日，全球可识别 OpenClaw 实例数量为 63,026 个。
 
 ![zoomeye_dork](./images/zoomeye_dork.png)
 
