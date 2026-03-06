@@ -6,6 +6,7 @@ import json
 import hashlib
 import subprocess
 import datetime
+import locale
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional
 
@@ -18,28 +19,292 @@ DATE_STR = datetime.date.today().isoformat()
 REPORT_FILE = REPORT_DIR / f'report-{DATE_STR}.txt'
 
 
+def is_chinese_locale() -> bool:
+    try:
+        lang = os.environ.get('LANG', '').lower()
+        lc_all = os.environ.get('LC_ALL', '').lower()
+        lc_ctype = os.environ.get('LC_CTYPE', '').lower()
+
+        for var in [lang, lc_all, lc_ctype]:
+            if 'zh' in var or 'cn' in var:
+                return True
+
+        loc = locale.getlocale()[0]
+        if loc and ('zh' in loc.lower() or 'cn' in loc.lower()):
+            return True
+
+        return False
+    except Exception:
+        return False
+
+
+USE_ZH = is_chinese_locale()
+
+I18N = {
+    'zh': {
+        'audit_result_class_doc': '审计结果类',
+        'add_success_doc': '添加成功信息',
+        'add_warning_doc': '添加警告信息',
+        'get_summary_doc': '获取汇总信息',
+        'ok': 'OK',
+        'warning': '警告',
+        'daily_brief_title': 'OpenClaw 每日安全巡检简报',
+        'warning_items': '警告项目：',
+        'run_command_doc': '执行命令并返回结果',
+        'run_command_args_doc': '命令列表',
+        'run_command_capture': '是否捕获输出',
+        'run_command_check': '是否检查返回码',
+        'run_command_returns': '(返回码, 标准输出, 标准错误)',
+        'command_not_found': '命令未找到',
+        'write_report_doc': '写入报告文件',
+        'append_report_doc': '追加内容到报告文件',
+        'platform_audit_header': 'OpenClaw 基础审计 (--deep)',
+        'platform_audit_success': '平台审计: 已执行原生扫描',
+        'platform_audit_failed': '平台审计: 执行失败（详见详细报告）',
+        'isolation_check_header': '运行环境隔离性检测',
+        'detected_docker': '检测到 Docker 容器环境',
+        'detected_container_cgroup': '检测到容器环境 (cgroup)',
+        'detected_vm': '检测到虚拟机环境 ({})',
+        'virt_type': '虚拟化类型: {}',
+        'env_isolated': '环境隔离: 运行在隔离环境中',
+        'no_vm_detected': '未检测到虚拟机/容器环境特征',
+        'env_not_isolated': '环境隔离: 建议在隔离环境 (VM/Docker) 中运行 OpenClaw',
+        'privilege_check_header': '最小权限原则检测',
+        'running_as_root': '当前以 root 身份运行',
+        'running_as_user': '当前以普通用户运行',
+        'root_warning': '权限检查: 不建议以 root 身份运行 OpenClaw',
+        'privilege_ok': '权限检查: 符合最小权限原则',
+        'gateway_exposure_header': 'Gateway 端口 (18789) 暴露检测',
+        'listening_record': '监听记录: {}',
+        'listening_all': '监听所有接口 (0.0.0.0/::)',
+        'listening_local': '仅监听本地 (127.0.0.1/::1)',
+        'port_exposed_warning': '端口暴露: 18789 端口监听所有接口，建议绑定 127.0.0.1',
+        'port_local_ok': '端口暴露: 18789 端口仅本地监听',
+        'port_not_listening': '未检测到 18789 端口监听',
+        'gateway_not_running': '端口暴露: Gateway 未运行或端口未监听',
+        'skill_trust_header': 'Skill 可信来源检测',
+        'skills_dir_not_found': '未找到 skills 目录',
+        'no_skills_installed': 'Skill 信任: 无已安装技能',
+        'skill_total': '总计: {} 个技能 (Git来源: {}, 本地: {})',
+        'skill_git_source': '  [{}] {}',
+        'too_many_skills': 'Skill 信任: 已安装 {} 个技能，建议定期审查',
+        'skills_count': 'Skill 信任: 已安装 {} 个技能',
+        'version_info_header': 'OpenClaw 版本信息',
+        'current_version': '当前版本: {}',
+        'latest_version': '最新版本: {}',
+        'version_not_latest': '版本检查: 当前版本 {} 非最新版本，建议升级',
+        'version_ok': '版本检查: 当前版本 {}',
+        'process_network_header': '监听端口与高资源进程',
+        'ss_failed': 'ss 命令执行失败',
+        'process_network_ok': '进程网络: 已采集监听端口与进程快照',
+        'sensitive_dirs_header': '敏感目录近 24h 变更文件数',
+        'total_modified_files': '总计变更文件数: {}',
+        'dir_changes': '目录变更: {} 个文件 (位于 /etc/ 或 ~/.ssh 等)',
+        'system_cron_header': '系统级定时任务与 Systemd Timers',
+        'systemctl_failed': 'systemctl 命令执行失败',
+        'system_cron_ok': '系统 Cron: 已采集系统级定时任务信息',
+        'openclaw_cron_header': 'OpenClaw Cron Jobs',
+        'no_openclaw_cron': '未找到 openclaw cron 命令',
+        'local_cron_ok': '本地 Cron: 已拉取内部任务列表',
+        'local_cron_failed': '本地 Cron: 拉取失败（可能是 token/权限问题）',
+        'ssh_header': '最近登录记录与 SSH 失败尝试',
+        'last_failed': 'last 命令执行失败',
+        'ssh_failed_attempts': 'SSH 失败尝试 (近24h): {}',
+        'ssh_security_ok': 'SSH 安全: 近24h 失败尝试 {} 次',
+        'file_integrity_header': '关键配置文件权限与哈希基线',
+        'baseline_not_exist': '基线文件不存在',
+        'file_not_exist': '文件不存在: {}',
+        'hash_mismatch': '哈希不匹配: {}',
+        'hash_ok': 'OK',
+        'hash_check': '哈希校验: {}',
+        'permissions': '权限: {}',
+        'baseline_ok': '配置基线: 哈希校验通过且权限合规',
+        'baseline_warning': '配置基线: 基线缺失/校验异常或权限不合规',
+        'yellow_line_header': '黄线操作对比 (sudo logs vs memory)',
+        'sudo_log': 'Sudo 日志: {}, Memory 日志: {}',
+        'yellow_line_ok': '黄线审计: sudo记录={}, memory记录={}',
+        'disk_usage_header': '磁盘使用率与最近大文件',
+        'disk_usage': '磁盘使用: {}, 大文件 (>100M): {}',
+        'disk_capacity': '磁盘容量: 根分区占用 {}, 新增 {} 个大文件',
+        'env_variables_header': 'Gateway 环境变量泄露扫描',
+        'sensitive_vars_found': '发现敏感环境变量: ',
+        'no_sensitive_vars': '未发现明显的敏感变量名',
+        'env_var_hidden': '{}=(已隐藏)',
+        'env_scan_ok': '环境变量: 已执行网关进程敏感变量名扫描',
+        'env_cannot_read': '环境变量: 无法读取进程环境文件',
+        'env_no_process': '环境变量: 未定位到 openclaw-gateway 进程',
+        'dlp_header': '明文私钥/助记词泄露扫描 (DLP)',
+        'dlp_result': 'DLP 扫描结果: {}',
+        'dlp_found': '敏感凭证扫描: 检测到疑似明文敏感信息({})，请人工复核',
+        'dlp_ok': '敏感凭证扫描: 未发现明显私钥/助记词模式',
+        'skill_integrity_header': 'Skill/MCP 完整性基线对比',
+        'changes_detected': '检测到变化:\n',
+        'integrity_changed': 'Skill/MCP基线: 检测到文件哈希变化（详见diff）',
+        'integrity_ok': 'Skill/MCP基线: 与上次基线一致',
+        'integrity_first': 'Skill/MCP基线: 首次生成基线完成',
+        'integrity_no_files': 'Skill/MCP基线: 未发现 skills/mcp 目录文件',
+        'disaster_recovery_header': '大脑灾备 (Git Backup)',
+        'no_git_repo': '灾备备份: 未初始化 Git 仓库，已跳过',
+        'no_changes': '无新变更，跳过提交',
+        'backup_failed': '推送失败: {}',
+        'backup_error': '备份过程出错: {}',
+        'backup_ok': '灾备备份: 已自动推送至远端仓库',
+        'backup_skip': '灾备备份: 无新变更，跳过推送',
+        'backup_push_failed': '灾备备份: 推送失败（不影响本次巡检）',
+        'telegram_send_failed': 'Telegram 发送失败: {}',
+        'report_title': '=== OpenClaw 安全审计详细报告 ({}) ===',
+        'version_unknown': '未知',
+        'detailed_report_saved': '详细报告已保存至: {}',
+        'new_addition': '新增: {}',
+        'modified': '变更: {}',
+        'disk_unknown': '未知',
+    },
+    'en': {
+        'audit_result_class_doc': 'Audit result class',
+        'add_success_doc': 'Add success message',
+        'add_warning_doc': 'Add warning message',
+        'get_summary_doc': 'Get summary',
+        'ok': 'OK',
+        'warning': 'WARNING',
+        'daily_brief_title': 'OpenClaw Daily Security Brief',
+        'warning_items': 'Warning Items:',
+        'run_command_doc': 'Execute command and return result',
+        'run_command_args_doc': 'Command list',
+        'run_command_capture': 'Whether to capture output',
+        'run_command_check': 'Whether to check return code',
+        'run_command_returns': '(return code, stdout, stderr)',
+        'command_not_found': 'Command not found',
+        'write_report_doc': 'Write report file',
+        'append_report_doc': 'Append content to report file',
+        'platform_audit_header': 'OpenClaw Basic Audit (--deep)',
+        'platform_audit_success': 'Platform Audit: Native scan executed',
+        'platform_audit_failed': 'Platform Audit: Execution failed (see detailed report)',
+        'isolation_check_header': 'Runtime Environment Isolation Check',
+        'detected_docker': 'Detected Docker container environment',
+        'detected_container_cgroup': 'Detected container environment (cgroup)',
+        'detected_vm': 'Detected VM environment ({})',
+        'virt_type': 'Virtualization type: {}',
+        'env_isolated': 'Environment Isolation: Running in isolated environment',
+        'no_vm_detected': 'No VM/container environment detected',
+        'env_not_isolated': 'Environment Isolation: Recommend running OpenClaw in isolated environment (VM/Docker)',
+        'privilege_check_header': 'Least Privilege Principle Check',
+        'running_as_root': 'Currently running as root',
+        'running_as_user': 'Currently running as normal user',
+        'root_warning': 'Privilege Check: Not recommended to run OpenClaw as root',
+        'privilege_ok': 'Privilege Check: Complies with least privilege principle',
+        'gateway_exposure_header': 'Gateway Port (18789) Exposure Check',
+        'listening_record': 'Listening record: {}',
+        'listening_all': 'Listening on all interfaces (0.0.0.0/::)',
+        'listening_local': 'Listening only on localhost (127.0.0.1/::1)',
+        'port_exposed_warning': 'Port Exposure: Port 18789 listening on all interfaces, recommend binding to 127.0.0.1',
+        'port_local_ok': 'Port Exposure: Port 18789 listening only on localhost',
+        'port_not_listening': 'Port 18789 not detected listening',
+        'gateway_not_running': 'Port Exposure: Gateway not running or port not listening',
+        'skill_trust_header': 'Skill Trust Source Check',
+        'skills_dir_not_found': 'Skills directory not found',
+        'no_skills_installed': 'Skill Trust: No skills installed',
+        'skill_total': 'Total: {} skills (Git source: {}, Local: {})',
+        'skill_git_source': '  [{}] {}',
+        'too_many_skills': 'Skill Trust: {} skills installed, recommend regular review',
+        'skills_count': 'Skill Trust: {} skills installed',
+        'version_info_header': 'OpenClaw Version Info',
+        'current_version': 'Current version: {}',
+        'latest_version': 'Latest version: {}',
+        'version_not_latest': 'Version Check: Current version {} is not latest, recommend upgrade',
+        'version_ok': 'Version Check: Current version {}',
+        'process_network_header': 'Listening Ports and High Resource Processes',
+        'ss_failed': 'ss command execution failed',
+        'process_network_ok': 'Process Network: Collected listening ports and process snapshot',
+        'sensitive_dirs_header': 'Sensitive Directory Changes in Last 24h',
+        'total_modified_files': 'Total modified files: {}',
+        'dir_changes': 'Directory Changes: {} files (in /etc/ or ~/.ssh, etc.)',
+        'system_cron_header': 'System-level Cron Jobs and Systemd Timers',
+        'systemctl_failed': 'systemctl command execution failed',
+        'system_cron_ok': 'System Cron: Collected system-level cron job info',
+        'openclaw_cron_header': 'OpenClaw Cron Jobs',
+        'no_openclaw_cron': 'openclaw cron command not found',
+        'local_cron_ok': 'Local Cron: Internal task list retrieved',
+        'local_cron_failed': 'Local Cron: Retrieval failed (possible token/permission issue)',
+        'ssh_header': 'Recent Login Records and SSH Failed Attempts',
+        'last_failed': 'last command execution failed',
+        'ssh_failed_attempts': 'SSH failed attempts (last 24h): {}',
+        'ssh_security_ok': 'SSH Security: {} failed attempts in last 24h',
+        'file_integrity_header': 'Key Config File Permissions and Hash Baseline',
+        'baseline_not_exist': 'Baseline file does not exist',
+        'file_not_exist': 'File does not exist: {}',
+        'hash_mismatch': 'Hash mismatch: {}',
+        'hash_ok': 'OK',
+        'hash_check': 'Hash check: {}',
+        'permissions': 'Permissions: {}',
+        'baseline_ok': 'Config Baseline: Hash verification passed and permissions compliant',
+        'baseline_warning': 'Config Baseline: Baseline missing/verification failed or permissions non-compliant',
+        'yellow_line_header': 'Yellow Line Operations Comparison (sudo logs vs memory)',
+        'sudo_log': 'Sudo logs: {}, Memory logs: {}',
+        'yellow_line_ok': 'Yellow Line Audit: sudo records={}, memory records={}',
+        'disk_usage_header': 'Disk Usage and Recent Large Files',
+        'disk_usage': 'Disk usage: {}, Large files (>100M): {}',
+        'disk_capacity': 'Disk Capacity: Root partition usage {}, {} new large files',
+        'env_variables_header': 'Gateway Environment Variable Leakage Scan',
+        'sensitive_vars_found': 'Found sensitive environment variables: ',
+        'no_sensitive_vars': 'No obvious sensitive variable names found',
+        'env_var_hidden': '{}=(hidden)',
+        'env_scan_ok': 'Environment Variables: Scanned gateway process for sensitive variable names',
+        'env_cannot_read': 'Environment Variables: Cannot read process environment file',
+        'env_no_process': 'Environment Variables: openclaw-gateway process not found',
+        'dlp_header': 'Plaintext Private Key/Mnemonic Leakage Scan (DLP)',
+        'dlp_result': 'DLP scan result: {}',
+        'dlp_found': 'Sensitive Credential Scan: Detected suspected plaintext sensitive info ({}), please manual review',
+        'dlp_ok': 'Sensitive Credential Scan: No obvious private key/mnemonic patterns found',
+        'skill_integrity_header': 'Skill/MCP Integrity Baseline Comparison',
+        'changes_detected': 'Changes detected:\n',
+        'integrity_changed': 'Skill/MCP Baseline: File hash changes detected (see diff for details)',
+        'integrity_ok': 'Skill/MCP Baseline: Consistent with last baseline',
+        'integrity_first': 'Skill/MCP Baseline: First baseline generation completed',
+        'integrity_no_files': 'Skill/MCP Baseline: No skills/mcp directory files found',
+        'disaster_recovery_header': 'Brain Disaster Recovery (Git Backup)',
+        'no_git_repo': 'Disaster Recovery Backup: Git repository not initialized, skipped',
+        'no_changes': 'No new changes, skipping commit',
+        'backup_failed': 'Push failed: {}',
+        'backup_error': 'Backup process error: {}',
+        'backup_ok': 'Disaster Recovery Backup: Automatically pushed to remote repository',
+        'backup_skip': 'Disaster Recovery Backup: No new changes, skipping push',
+        'backup_push_failed': 'Disaster Recovery Backup: Push failed (does not affect this audit)',
+        'telegram_send_failed': 'Telegram send failed: {}',
+        'report_title': '=== OpenClaw Security Audit Detailed Report ({}) ===',
+        'version_unknown': 'Unknown',
+        'detailed_report_saved': 'Detailed report saved to: {}',
+        'new_addition': 'New: {}',
+        'modified': 'Modified: {}',
+        'disk_unknown': 'Unknown',
+    }
+}
+
+
+def t(key: str, *args) -> str:
+    """Translation helper function"""
+    lang = 'zh' if USE_ZH else 'en'
+    return I18N[lang].get(key, key).format(*args) if args else I18N[lang].get(key, key)
+
+
 class AuditResult:
-    """审计结果类"""
     def __init__(self):
         self.summary_lines = []
         self.warnings = []
 
     def add_success(self, message: str):
-        """添加成功信息"""
-        self.summary_lines.append(f"[OK] {message}")
+        self.summary_lines.append(f"[{t('ok')}] {message}")
 
     def add_warning(self, message: str):
-        """添加警告信息"""
-        self.warnings.append(f"[警告] {message}")
-        self.summary_lines.append(f"[警告] {message}")
+        warn_msg = f"[{t('warning')}] {message}"
+        self.warnings.append(warn_msg)
+        self.summary_lines.append(warn_msg)
 
     def get_summary(self) -> str:
-        """获取汇总信息"""
-        lines = [f"OpenClaw 每日安全巡检简报 ({DATE_STR})", ""]
+        lines = [f"{t('daily_brief_title')} ({DATE_STR})", ""]
         lines.extend(self.summary_lines)
         if self.warnings:
             lines.append("")
-            lines.append("警告项目：")
+            lines.append(t('warning_items'))
             lines.extend(self.warnings)
         return "\n".join(lines)
 
@@ -49,17 +314,6 @@ def run_command(
     capture: bool = True,
     check: bool = False
 ) -> Tuple[int, str, str]:
-    """
-    执行命令并返回结果
-
-    Args:
-        cmd: 命令列表
-        capture: 是否捕获输出
-        check: 是否检查返回码
-
-    Returns:
-        (返回码, 标准输出, 标准错误)
-    """
     try:
         result = subprocess.run(
             cmd,
@@ -71,7 +325,7 @@ def run_command(
     except subprocess.CalledProcessError as e:
         return e.returncode, e.stdout, e.stderr
     except FileNotFoundError:
-        return -1, "", "命令未找到"
+        return -1, "", t('command_not_found')
     except Exception as e:
         return -1, "", str(e)
 
@@ -81,19 +335,17 @@ def setup_report_dir() -> None:
 
 
 def write_report(content: str) -> None:
-    """写入报告文件"""
     with open(REPORT_FILE, 'w', encoding='utf-8') as f:
         f.write(content)
 
 
 def append_report(content: str) -> None:
-    """追加内容到报告文件"""
     with open(REPORT_FILE, 'a', encoding='utf-8') as f:
         f.write(content)
 
 
 def audit_platform(result: AuditResult) -> None:
-    append_report("\nOpenClaw 基础审计 (--deep)")
+    append_report(f"\n{t('platform_audit_header')}")
     code, stdout, stderr = run_command([
         'openclaw', 'security', 'audit', '--deep'
     ], check=False)
@@ -101,73 +353,67 @@ def audit_platform(result: AuditResult) -> None:
     append_report(stdout or stderr)
 
     if code == 0:
-        result.add_success("平台审计: 已执行原生扫描")
+        result.add_success(t('platform_audit_success'))
     else:
-        result.add_warning("平台审计: 执行失败（详见详细报告）")
+        result.add_warning(t('platform_audit_failed'))
 
 
 def audit_isolation(result: AuditResult) -> None:
-    """检测运行环境隔离性"""
-    append_report("\n运行环境隔离性检测")
+    """Check runtime environment isolation"""
+    append_report(f"\n{t('isolation_check_header')}")
 
     isolation_info = []
     is_isolated = False
 
-    # 检测 Docker 容器
     docker_path = Path('/.dockerenv')
     if docker_path.exists():
-        isolation_info.append("检测到 Docker 容器环境")
+        isolation_info.append(t('detected_docker'))
         is_isolated = True
 
-    # 检测 cgroup
     _, cgroup_output, _ = run_command(['cat', '/proc/1/cgroup'], check=False)
     if cgroup_output and ('docker' in cgroup_output.lower() or 'kubepods' in cgroup_output.lower()):
-        if 'docker' not in isolation_info:
-            isolation_info.append("检测到容器环境 (cgroup)")
+        if t('detected_docker') not in isolation_info:
+            isolation_info.append(t('detected_container_cgroup'))
             is_isolated = True
 
-    # 检测虚拟机
     _, dmi_output, _ = run_command(['cat', '/sys/class/dmi/id/product_name'], check=False)
     if dmi_output:
         vm_keywords = ['vmware', 'virtualbox', 'kvm', 'qemu', 'xen', 'hyper-v']
         for keyword in vm_keywords:
             if keyword in dmi_output.lower():
-                isolation_info.append(f"检测到虚拟机环境 ({dmi_output.strip()})")
+                isolation_info.append(t('detected_vm', dmi_output.strip()))
                 is_isolated = True
                 break
 
-    # 检测 systemd-detect-virt
     code, virt_output, _ = run_command(['systemd-detect-virt'], check=False)
     if code == 0 and virt_output.strip() != 'none':
-        if virt_output.strip() not in str(isolation_info):
-            isolation_info.append(f"虚拟化类型: {virt_output.strip()}")
+        if t('virt_type', virt_output.strip()) not in str(isolation_info):
+            isolation_info.append(t('virt_type', virt_output.strip()))
             is_isolated = True
 
     if isolation_info:
         append_report(" | ".join(isolation_info))
-        result.add_success("环境隔离: 运行在隔离环境中")
+        result.add_success(t('env_isolated'))
     else:
-        append_report("未检测到虚拟机/容器环境特征")
-        result.add_warning("环境隔离: 建议在隔离环境 (VM/Docker) 中运行 OpenClaw")
+        append_report(t('no_vm_detected'))
+        result.add_warning(t('env_not_isolated'))
 
 
 def audit_root_privilege(result: AuditResult) -> None:
-    """检测 root 权限运行"""
-    append_report("\n最小权限原则检测")
+    append_report(f"\n{t('privilege_check_header')}")
 
     is_root = os.geteuid() == 0
 
     if is_root:
-        append_report("当前以 root 身份运行")
-        result.add_warning("权限检查: 不建议以 root 身份运行 OpenClaw")
+        append_report(t('running_as_root'))
+        result.add_warning(t('root_warning'))
     else:
-        append_report("当前以普通用户运行")
-        result.add_success("权限检查: 符合最小权限原则")
+        append_report(t('running_as_user'))
+        result.add_success(t('privilege_ok'))
 
 
 def audit_gateway_exposure(result: AuditResult) -> None:
-    """检测 18789 端口暴露情况"""
-    append_report("\nGateway 端口 (18789) 暴露检测")
+    append_report(f"\n{t('gateway_exposure_header')}")
 
     _, ss_output, _ = run_command([
         'ss', '-tunlp'
@@ -179,37 +425,36 @@ def audit_gateway_exposure(result: AuditResult) -> None:
     if ss_output:
         for line in ss_output.split('\n'):
             if '18789' in line:
-                append_report(f"监听记录: {line.strip()}")
+                append_report(t('listening_record', line.strip()))
                 if '0.0.0.0:18789' in line or '[::]:18789' in line:
                     exposed = True
-                    binding_info.append("监听所有接口 (0.0.0.0/::)")
+                    binding_info.append(t('listening_all'))
                 elif '127.0.0.1:18789' in line or '[::1]:18789' in line:
-                    binding_info.append("仅监听本地 (127.0.0.1/::1)")
+                    binding_info.append(t('listening_local'))
 
     if binding_info:
         append_report(" | ".join(binding_info))
 
     if exposed:
-        result.add_warning("端口暴露: 18789 端口监听所有接口，建议绑定 127.0.0.1")
+        result.add_warning(t('port_exposed_warning'))
     elif binding_info:
-        result.add_success("端口暴露: 18789 端口仅本地监听")
+        result.add_success(t('port_local_ok'))
     else:
-        append_report("未检测到 18789 端口监听")
-        result.add_success("端口暴露: Gateway 未运行或端口未监听")
+        append_report(t('port_not_listening'))
+        result.add_success(t('gateway_not_running'))
 
 
 def audit_skill_trust(result: AuditResult) -> None:
-    """检测已安装 Skill 的可信度"""
-    append_report("\nSkill 可信来源检测")
+    append_report(f"\n{t('skill_trust_header')}")
 
     skill_dir = OC_STATE_DIR / 'workspace' / 'skills'
 
     if not skill_dir.exists():
-        append_report("未找到 skills 目录")
-        result.add_success("Skill 信任: 无已安装技能")
+        append_report(t('skills_dir_not_found'))
+        result.add_success(t('no_skills_installed'))
         return
 
-    # 统计技能数量和来源
+    # count skills and sources
     skill_count = 0
     from_git = 0
     from_local = 0
@@ -221,39 +466,34 @@ def audit_skill_trust(result: AuditResult) -> None:
             git_dir = skill_path / '.git'
             if git_dir.exists():
                 from_git += 1
-                # 获取 git remote
                 code, remote_output, _ = run_command([
                     'git', '-C', str(skill_path),
                     'remote', '-v'
                 ], check=False)
                 if remote_output:
-                    append_report(f"  [{skill_path.name}] {remote_output.split()[0] if remote_output.split() else 'unknown'}")
+                    append_report(t('skill_git_source', skill_path.name, remote_output.split()[0] if remote_output.split() else 'unknown'))
             else:
                 from_local += 1
 
-    append_report(f"总计: {skill_count} 个技能 (Git来源: {from_git}, 本地: {from_local})")
+    append_report(t('skill_total', skill_count, from_git, from_local))
 
     if skill_count > 10:
-        result.add_warning(f"Skill 信任: 已安装 {skill_count} 个技能，建议定期审查")
+        result.add_warning(t('too_many_skills', skill_count))
     else:
-        result.add_success(f"Skill 信任: 已安装 {skill_count} 个技能")
+        result.add_success(t('skills_count', skill_count))
 
 
 def check_openclaw_version() -> Tuple[Optional[str], Optional[str]]:
-    """检查 OpenClaw 当前版本和最新版本"""
     current_ver = None
     latest_ver = None
 
-    # 获取当前版本
     code, output, _ = run_command(['openclaw', '--version'], check=False)
     if output:
-        # 尝试解析版本号
         for line in output.split('\n'):
             if line.strip():
                 current_ver = line.strip()
                 break
 
-    # 获取最新版本 (通过 openclow update --check 或 API)
     code, output, _ = run_command([
         'openclaw', 'update', '--check'
     ], check=False)
@@ -268,24 +508,22 @@ def check_openclaw_version() -> Tuple[Optional[str], Optional[str]]:
 
 
 def audit_process_network(result: AuditResult) -> None:
-    append_report("\n监听端口与高资源进程")
+    append_report(f"\n{t('process_network_header')}")
 
-    # 获取监听端口
     _, ss_output, _ = run_command(['ss', '-tunlp'], check=False)
-    append_report(ss_output or "ss 命令执行失败")
+    append_report(ss_output or t('ss_failed'))
 
-    # 获取进程信息
     _, top_output, _ = run_command([
         'top', '-b', '-n', '1'
     ], check=False)
     if top_output:
         append_report("\n".join(top_output.split('\n')[:15]))
 
-    result.add_success("进程网络: 已采集监听端口与进程快照")
+    result.add_success(t('process_network_ok'))
 
 
 def audit_sensitive_dirs(result: AuditResult) -> None:
-    append_report("\n敏感目录近 24h 变更文件数")
+    append_report(f"\n{t('sensitive_dirs_header')}")
 
     dirs_to_check = [
         OC_STATE_DIR,
@@ -306,56 +544,53 @@ def audit_sensitive_dirs(result: AuditResult) -> None:
             if output:
                 mod_count += len(output.strip().split('\n'))
 
-    append_report(f"总计变更文件数: {mod_count}")
-    result.add_success(f"目录变更: {mod_count} 个文件 (位于 /etc/ 或 ~/.ssh 等)")
+    append_report(t('total_modified_files', mod_count))
+    result.add_success(t('dir_changes', mod_count))
 
 
 def audit_system_cron(result: AuditResult) -> None:
-    append_report("\n系统级定时任务与 Systemd Timers")
+    append_report(f"\n{t('system_cron_header')}")
 
-    # 检查 cron 目录
     cron_dirs = ['/etc/cron.*', '/var/spool/cron/crontabs/']
     for cron_dir in cron_dirs:
         _, output, _ = run_command(['ls', '-la', cron_dir], check=False)
         append_report(output or "")
 
-    # 检查 systemd timers
     _, timers_output, _ = run_command([
         'systemctl', 'list-timers', '--all'
     ], check=False)
-    append_report(timers_output or "systemctl 命令执行失败")
+    append_report(timers_output or t('systemctl_failed'))
 
-    # 检查用户 systemd
     user_systemd = Path.home() / '.config/systemd/user'
     if user_systemd.exists():
         _, output, _ = run_command(['ls', '-la', str(user_systemd)], check=False)
         append_report(output or "")
 
-    result.add_success("系统 Cron: 已采集系统级定时任务信息")
+    result.add_success(t('system_cron_ok'))
 
 
 def audit_openclaw_cron(result: AuditResult) -> None:
-    append_report("\nOpenClaw Cron Jobs")
+    append_report(f"\n{t('openclaw_cron_header')}")
 
     code, stdout, stderr = run_command([
         'openclaw', 'cron', 'list'
     ], check=False)
 
-    append_report(stdout or stderr or "未找到 openclaw cron 命令")
+    append_report(stdout or stderr or t('no_openclaw_cron'))
 
     if code == 0:
-        result.add_success("本地 Cron: 已拉取内部任务列表")
+        result.add_success(t('local_cron_ok'))
     else:
-        result.add_warning("本地 Cron: 拉取失败（可能是 token/权限问题）")
+        result.add_warning(t('local_cron_failed'))
 
 
 def audit_ssh(result: AuditResult) -> None:
-    append_report("\n最近登录记录与 SSH 失败尝试")
+    append_report(f"\n{t('ssh_header')}")
 
     _, last_output, _ = run_command(['last', '-a', '-n', '5'], check=False)
-    append_report(last_output or "last 命令执行失败")
+    append_report(last_output or t('last_failed'))
 
-    # SSH 失败尝试
+    # SSH failed attempts
     failed_ssh = 0
     _, journal_output, _ = run_command([
         'journalctl', '-u', 'sshd',
@@ -379,16 +614,15 @@ def audit_ssh(result: AuditResult) -> None:
                     failed_ssh = len(output.strip().split('\n'))
                 break
 
-    append_report(f"SSH 失败尝试 (近24h): {failed_ssh}")
-    result.add_success(f"SSH 安全: 近24h 失败尝试 {failed_ssh} 次")
+    append_report(t('ssh_failed_attempts', failed_ssh))
+    result.add_success(t('ssh_security_ok', failed_ssh))
 
 
 def audit_file_integrity(result: AuditResult) -> None:
-    """关键文件完整性与权限"""
-    append_report("\n关键配置文件权限与哈希基线")
+    append_report(f"\n{t('file_integrity_header')}")
 
     baseline_file = OC_STATE_DIR / '.config-baseline.sha256'
-    hash_result = "基线文件不存在"
+    hash_result = t('baseline_not_exist')
 
     if baseline_file.exists():
         with open(baseline_file, 'r') as f:
@@ -399,7 +633,6 @@ def audit_file_integrity(result: AuditResult) -> None:
                     if len(parts) >= 2:
                         baseline_data[parts[1]] = parts[0]
 
-        # 计算当前文件哈希
         current_data = {}
         files_to_check = [
             OC_STATE_DIR / 'openclaw.json',
@@ -417,19 +650,18 @@ def audit_file_integrity(result: AuditResult) -> None:
             actual_hash = current_data.get(path)
             if actual_hash is None:
                 all_ok = False
-                hash_result = f"文件不存在: {path}"
+                hash_result = t('file_not_exist', path)
                 break
             if actual_hash != expected_hash:
                 all_ok = False
-                hash_result = f"哈希不匹配: {path}"
+                hash_result = t('hash_mismatch', path)
                 break
 
         if all_ok and current_data:
-            hash_result = "OK"
+            hash_result = t('hash_ok')
 
-    append_report(f"哈希校验: {hash_result}")
+    append_report(t('hash_check', hash_result))
 
-    # 检查权限
     perms = {}
     files_to_check = [
         ('openclaw', OC_STATE_DIR / 'openclaw.json'),
@@ -447,16 +679,16 @@ def audit_file_integrity(result: AuditResult) -> None:
             perms[name] = "N/A"
 
     perm_str = ", ".join(f"{k}={v}" for k, v in perms.items())
-    append_report(f"权限: {perm_str}")
+    append_report(t('permissions', perm_str))
 
-    if hash_result == "OK" and perms.get('openclaw') == '0o600':
-        result.add_success("配置基线: 哈希校验通过且权限合规")
+    if hash_result == t('hash_ok') and perms.get('openclaw') == '0o600':
+        result.add_success(t('baseline_ok'))
     else:
-        result.add_warning("配置基线: 基线缺失/校验异常或权限不合规")
+        result.add_warning(t('baseline_warning'))
 
 
 def audit_yellow_line(result: AuditResult) -> None:
-    append_report("\n黄线操作对比 (sudo logs vs memory)")
+    append_report(f"\n{t('yellow_line_header')}")
 
     sudo_count = 0
     log_files = ['/var/log/auth.log', '/var/log/secure', '/var/log/messages']
@@ -478,15 +710,15 @@ def audit_yellow_line(result: AuditResult) -> None:
             content = f.read()
             mem_count = content.lower().count('sudo')
 
-    append_report(f"Sudo 日志: {sudo_count}, Memory 日志: {mem_count}")
-    result.add_success(f"黄线审计: sudo记录={sudo_count}, memory记录={mem_count}")
+    append_report(t('sudo_log', sudo_count, mem_count))
+    result.add_success(t('yellow_line_ok', sudo_count, mem_count))
 
 
 def audit_disk_usage(result: AuditResult) -> None:
-    append_report("\n磁盘使用率与最近大文件")
+    append_report(f"\n{t('disk_usage_header')}")
 
     _, df_output, _ = run_command(['df', '-h', '/'], check=False)
-    disk_usage = "未知"
+    disk_usage = t('disk_unknown')
     if df_output:
         lines = df_output.split('\n')
         if len(lines) >= 2:
@@ -504,12 +736,12 @@ def audit_disk_usage(result: AuditResult) -> None:
     if find_output:
         large_files = len(find_output.strip().split('\n'))
 
-    append_report(f"磁盘使用: {disk_usage}, 大文件 (>100M): {large_files}")
-    result.add_success(f"磁盘容量: 根分区占用 {disk_usage}, 新增 {large_files} 个大文件")
+    append_report(t('disk_usage', disk_usage, large_files))
+    result.add_success(t('disk_capacity', disk_usage, large_files))
 
 
 def audit_env_variables(result: AuditResult) -> None:
-    append_report("\nGateway 环境变量泄露扫描")
+    append_report(f"\n{t('env_variables_header')}")
 
     _, pgrep_output, _ = run_command([
         'pgrep', '-f', 'openclaw-gateway'
@@ -533,23 +765,23 @@ def audit_env_variables(result: AuditResult) -> None:
                     for keyword in ['SECRET', 'TOKEN', 'PASSWORD', 'KEY']:
                         if keyword in line.upper():
                             var_name = line.split('=')[0]
-                            sensitive_found.append(f"{var_name}=(已隐藏)")
+                            sensitive_found.append(t('env_var_hidden', var_name))
                             break
 
             if sensitive_found:
-                append_report("发现敏感环境变量: " + ", ".join(sensitive_found[:5]))
+                append_report(t('sensitive_vars_found') + ", ".join(sensitive_found[:5]))
             else:
-                append_report("未发现明显的敏感变量名")
+                append_report(t('no_sensitive_vars'))
 
-            result.add_success("环境变量: 已执行网关进程敏感变量名扫描")
+            result.add_success(t('env_scan_ok'))
         else:
-            result.add_warning("环境变量: 无法读取进程环境文件")
+            result.add_warning(t('env_cannot_read'))
     else:
-        result.add_warning("环境变量: 未定位到 openclaw-gateway 进程")
+        result.add_warning(t('env_no_process'))
 
 
 def audit_dlp(result: AuditResult) -> None:
-    append_report("\n明文私钥/助记词泄露扫描 (DLP)")
+    append_report(f"\n{t('dlp_header')}")
 
     import re
 
@@ -557,10 +789,10 @@ def audit_dlp(result: AuditResult) -> None:
     dlp_hits = 0
 
     if scan_root.exists():
-        # 扫描以太坊私钥模式 (0x + 64 hex)
+        # Scan Ethereum private key pattern
         eth_pattern = re.compile(r'\b0x[a-fA-F0-9]{64}\b')
 
-        # 扫描助记词模式 (12/24 个小写单词)
+        # Scan mnemonic pattern
         mnemonic_pattern = re.compile(
             r'\b([a-z]{3,12}\s+){11,23}([a-z]{3,12})\b'
         )
@@ -581,16 +813,16 @@ def audit_dlp(result: AuditResult) -> None:
                 except Exception:
                     pass
 
-    append_report(f"DLP 扫描结果: {dlp_hits}")
+    append_report(t('dlp_result', dlp_hits))
 
     if dlp_hits > 0:
-        result.add_warning(f"敏感凭证扫描: 检测到疑似明文敏感信息({dlp_hits})，请人工复核")
+        result.add_warning(t('dlp_found', dlp_hits))
     else:
-        result.add_success("敏感凭证扫描: 未发现明显私钥/助记词模式")
+        result.add_success(t('dlp_ok'))
 
 
 def audit_skill_integrity(result: AuditResult) -> None:
-    append_report("\nSkill/MCP 完整性基线对比")
+    append_report(f"\n{t('skill_integrity_header')}")
 
     skill_dir = OC_STATE_DIR / 'workspace' / 'skills'
     mcp_dir = OC_STATE_DIR / 'workspace' / 'mcp'
@@ -601,7 +833,6 @@ def audit_skill_integrity(result: AuditResult) -> None:
     cur_hash = hash_dir / 'skill-mcp-current.sha256'
     base_hash = hash_dir / 'skill-mcp-baseline.sha256'
 
-    # 计算当前哈希
     current_hashes = {}
     for check_dir in [skill_dir, mcp_dir]:
         if check_dir.exists():
@@ -614,14 +845,13 @@ def audit_skill_integrity(result: AuditResult) -> None:
                     except Exception:
                         pass
 
-    # 写入当前哈希文件
     with open(cur_hash, 'w') as f:
         for path, hash_val in sorted(current_hashes.items()):
             f.write(f"{hash_val}  {path}\n")
 
     if current_hashes:
         if base_hash.exists():
-            # 比较差异
+            # compare differences
             with open(base_hash, 'r') as f:
                 baseline_hashes = {}
                 for line in f:
@@ -629,36 +859,36 @@ def audit_skill_integrity(result: AuditResult) -> None:
                     if len(parts) >= 2:
                         baseline_hashes[parts[1]] = parts[0]
 
-            # 检查是否有变化
+            # check for changes
             changes = []
             for path, cur_hash_val in current_hashes.items():
                 base_hash_val = baseline_hashes.get(path)
                 if base_hash_val is None:
-                    changes.append(f"新增: {path}")
+                    changes.append(t('new_addition', path))
                 elif base_hash_val != cur_hash_val:
-                    changes.append(f"变更: {path}")
+                    changes.append(t('modified', path))
 
             if changes:
-                append_report("检测到变化:\n" + "\n".join(changes[:10]))
-                result.add_warning("Skill/MCP基线: 检测到文件哈希变化（详见diff）")
+                append_report(t('changes_detected') + "\n".join(changes[:10]))
+                result.add_warning(t('integrity_changed'))
             else:
-                result.add_success("Skill/MCP基线: 与上次基线一致")
+                result.add_success(t('integrity_ok'))
         else:
-            # 首次生成基线
+            # first time generating baseline
             import shutil
             shutil.copy(cur_hash, base_hash)
-            result.add_success("Skill/MCP基线: 首次生成基线完成")
+            result.add_success(t('integrity_first'))
     else:
-        result.add_success("Skill/MCP基线: 未发现 skills/mcp 目录文件")
+        result.add_success(t('integrity_no_files'))
 
 
 def audit_disaster_recovery(result: AuditResult) -> None:
-    append_report("\n大脑灾备 (Git Backup)")
+    append_report(f"\n{t('disaster_recovery_header')}")
 
     git_dir = OC_STATE_DIR / '.git'
 
     if not git_dir.exists():
-        result.add_warning("灾备备份: 未初始化 Git 仓库，已跳过")
+        result.add_warning(t('no_git_repo'))
         return
 
     backup_status = "unknown"
@@ -666,20 +896,17 @@ def audit_disaster_recovery(result: AuditResult) -> None:
     try:
         os.chdir(OC_STATE_DIR)
 
-        # git add
         run_command(['git', 'add', '.'], check=False)
 
-        # 检查是否有变更
         code, stdout, _ = run_command([
             'git', 'diff', '--cached', '--quiet'
         ], check=False)
 
         if code == 0:
             backup_status = "skip"
-            append_report("无新变更，跳过提交")
+            append_report(t('no_changes'))
         else:
-            # 有变更，提交并推送
-            commit_msg = f"OpenClaw 每日备份 ({DATE_STR})"
+            commit_msg = f"OpenClaw daily backup ({DATE_STR})" if not USE_ZH else f"OpenClaw 每日备份 ({DATE_STR})"
             run_command([
                 'git', 'commit', '-m', commit_msg
             ], check=False)
@@ -692,22 +919,21 @@ def audit_disaster_recovery(result: AuditResult) -> None:
                 backup_status = "ok"
             else:
                 backup_status = "fail"
-                append_report(f"推送失败: {stderr}")
+                append_report(t('backup_failed', stderr))
 
     except Exception as e:
-        append_report(f"备份过程出错: {str(e)}")
+        append_report(t('backup_error', str(e)))
         backup_status = "error"
 
     if backup_status == "ok":
-        result.add_success("灾备备份: 已自动推送至远端仓库")
+        result.add_success(t('backup_ok'))
     elif backup_status == "skip":
-        result.add_success("灾备备份: 无新变更，跳过推送")
+        result.add_success(t('backup_skip'))
     else:
-        result.add_warning("灾备备份: 推送失败（不影响本次巡检）")
+        result.add_warning(t('backup_push_failed'))
 
 
 def send_telegram_report(summary: str) -> bool:
-    """发送 Telegram 报告"""
     bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
     chat_id = os.environ.get('TELEGRAM_CHAT_ID')
 
@@ -729,27 +955,26 @@ def send_telegram_report(summary: str) -> bool:
         with urllib.request.urlopen(req) as response:
             return response.getcode() == 200
     except Exception as e:
-        append_report(f"\nTelegram 发送失败: {str(e)}")
+        append_report(f"\n{t('telegram_send_failed', str(e))}")
         return False
 
 
 def main():
-    """主函数"""
-    print(f"=== OpenClaw 安全审计详细报告 ({DATE_STR}) ===")
+    print(t('report_title', DATE_STR))
 
     setup_report_dir()
     result = AuditResult()
 
-    write_report(f"=== OpenClaw 安全审计详细报告 ({DATE_STR}) ===")
+    write_report(t('report_title', DATE_STR))
 
     current_ver, latest_ver = check_openclaw_version()
-    append_report(f"\nOpenClaw 版本信息")
-    append_report(f"当前版本: {current_ver or '未知'}")
-    append_report(f"最新版本: {latest_ver or '未知'}")
+    append_report(f"\n{t('version_info_header')}")
+    append_report(t('current_version', current_ver or t('version_unknown')))
+    append_report(t('latest_version', latest_ver or t('version_unknown')))
     if current_ver and latest_ver and current_ver != latest_ver:
-        result.add_warning(f"版本检查: 当前版本 {current_ver} 非最新版本，建议升级")
+        result.add_warning(t('version_not_latest', current_ver))
     else:
-        result.add_success(f"版本检查: 当前版本 {current_ver or '未知'}")
+        result.add_success(t('version_ok', current_ver or t('version_unknown')))
 
     audit_platform(result)
     audit_isolation(result)
@@ -772,9 +997,8 @@ def main():
     summary = result.get_summary()
 
     print("\n" + summary)
-    print(f"\n详细报告已保存至: {REPORT_FILE}")
+    print(t('detailed_report_saved', REPORT_FILE))
 
-    # 尝试发送 Telegram
     send_telegram_report(summary)
 
     return 0
