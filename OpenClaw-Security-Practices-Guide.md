@@ -23,7 +23,7 @@ Runtime   ─── You adhere to command classification; Tier-1 commands requir
   │
 Post-task ─── After important/complex operations, you proactively perform targeted audits
   │
-Daily     ─── You execute a full 20-item audit via cron, with full explicit reporting
+Daily     ─── You execute a full 21-item audit via cron, with full explicit reporting
   │
 Ongoing   ─── You automatically push disaster recovery backups at the end of each audit
 ```
@@ -239,6 +239,8 @@ Deploy the following threat intelligence files under `$CLAW_HOME/workspace/secur
 | `malicious-domains.txt` | Malicious domains (payload distribution, data exfiltration, phishing) | `domain\|type\|campaign\|notes` |
 | `file-hashes.txt` | Known malicious file SHA-256 hashes | `hash\|filename\|platform\|family\|notes` |
 | `malicious-publishers.txt` | Known malicious ClawHub / GitHub publishers | `username\|skill_count\|campaign\|notes` |
+| `openclaw_vulnerabilities.csv` | OpenClaw known vulnerability database (version matching, remote sync) | CSV: `No.,Title,ID,Severity,Affected Versions,Link` |
+| `malicious-skill-names.txt` | Confirmed malicious skill names (exact match) | `name\|category\|notes` |
 | `malicious-skill-patterns.txt` | Malicious skill naming patterns (regex) | `pattern\|category\|notes` |
 
 **Initial data** (sources: Koi Security ClawHavoc report, VirusTotal, Snyk ToxicSkills, Bloom Security/JFrog, Hudson Rock, Antiy CERT, Oasis Security):
@@ -308,6 +310,95 @@ lvy19811120-gif|multiple|bloom-campaign|GitHub account distributing malicious sk
 clawdhub1|~100|snyk-clawdhub|Active variant of removed clawhub typosquat, drops reverse shells
 Ddoy233|1|opensourcemalware|GitHub repo openclawcli - Windows infostealer
 hedefbari|1|clawhavoc|GitHub hosting openclaw-agent.zip
+mohibshaikh|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+moonshine-100rze|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+pierremenard|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+renixaus|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+senthazalravi|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+shay0j|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+```
+
+</details>
+
+<details>
+<summary>malicious-skill-names.txt (exact name list)</summary>
+
+```
+agent-browser-6aigix9qi2tu|browser-lure|Browser agent variant
+agent-browser-ymepfebfpc2x|browser-lure|Browser agent variant
+agent-browser-zd1dook9mtfz|browser-lure|Browser agent variant
+auto-updater-161ks|updater-lure|Fake updater
+auto-updater-3miomc4dvir|updater-lure|Fake updater
+auto-updater-ah1|updater-lure|Fake updater
+auto-updater-ek1qviijfp1|updater-lure|Fake updater
+autoupdater|updater-lure|No-hyphen fake updater
+bird-0p|social-lure|Bird/Twitter variant
+bird-su|social-lure|Bird/Twitter variant
+blrd|social-lure|Bird typo variant
+browserautomation|browser-lure|No-hyphen browser automation
+clawbhub|typosquat|b-h transposition
+clawdhab|typosquat|Vowel swap variant
+clawdhub-0ds2em57jf|typosquat|clawdhub variant
+clawdhub-2trnbtcgyo|typosquat|clawdhub variant
+clawhub-6yr3b|typosquat|clawhub with random suffix
+clawhud|typosquat|Letter omission variant
+coding-agent-4ilvlj7rs|coding-lure|Coding assistant variant
+coding-agent-7k8p1tijc|coding-lure|Coding assistant variant
+coding-agent-pekjzav3x|coding-lure|Coding assistant variant
+codingagent|coding-lure|No-hyphen coding assistant
+deep-research-eejukdjn|research-lure|Deep research variant
+deep-research-eoo5vd95|research-lure|Deep research variant
+deep-research-kgenr3rn|research-lure|Deep research variant
+deep-research-v2h55k2w|research-lure|Deep research variant
+deepresearch|research-lure|No-hyphen deep research
+ethereum-gas-tracker-abxf0|crypto-lure|Ethereum gas tracker
+excel-1kl|office-lure|Excel tool lure
+gog-g7ksras|suspicious-lure|Suspicious random-suffix pattern
+gog-kfnluze|suspicious-lure|Suspicious random-suffix pattern
+google-workspace-2z5dp|gworkspace-lure|Google Workspace variant
+googleworkspace|gworkspace-lure|No-hyphen Google Workspace
+insider-wallets-finder-1a7pi|crypto-lure|Insider wallet finder
+linkedin-job-application|exfil-skill|Job application credential exfil
+linkedin-y5b|social-lure|LinkedIn variant
+lost-bitcoin-10li1|crypto-lure|Lost Bitcoin recovery lure
+moltbook-lm8|monitor-lure|Moltbook monitoring service
+nano-banana-pro-8ap3x7|crypto-lure|Nano cryptocurrency lure
+nano-banana-pro-fxgpbf|crypto-lure|Nano cryptocurrency lure
+nano-bananapro|crypto-lure|Nano cryptocurrency lure
+nano-pdf-9j7bj|pdf-lure|Nano PDF variant
+nano-pdf-cr79t|pdf-lure|Nano PDF variant
+nanopdf|pdf-lure|Nano PDF variant
+obfuscated-payload|malware|Obfuscated payload delivery
+openclaw-backup-dnkxm|backup-lure|Fake OpenClaw backup
+pdf-1wso5|pdf-lure|Randomly-suffixed PDF lure
+phantom-0jcvy|crypto-lure|Phantom wallet variant
+polymarket-25nwy|prediction-lure|Polymarket variant
+polymarket-assistant|prediction-lure|Polymarket assistant
+polymarket-hyperliquid-trading|prediction-lure|Polymarket trading variant
+polymarket-trading|prediction-lure|Polymarket trading
+security-check|security-lure|Security check variant
+solana-07bcb|crypto-lure|Solana chain lure
+summarlze|typosquat|Summarize i-to-l typo
+summarize-177r|generic-lure|Summarize tool lure
+summarize-nrqj|generic-lure|Summarize tool lure
+wacli-1sk|messaging-lure|WhatsApp CLI variant
+wacli-5qi|messaging-lure|WhatsApp CLI variant
+wacli-xcb|messaging-lure|WhatsApp CLI variant
+wallet-tracker-0ghsk|crypto-lure|Wallet tracker
+whatsapp|messaging-lure|Exact WhatsApp skill name
+x-trends-0heof|social-lure|X/Twitter trends
+yahoo-finance-lpm-1-0-0|finance-lure|Yahoo Finance variant
+youtube-summarize-35o20|youtube-lure|Summarizer variant
+youtube-summarize-ebw5x|youtube-lure|Summarizer variant
+youtube-thumbnail-grabber-2dp6g|youtube-lure|Thumbnail grabber variant
+youtube-thumbnail-grabber-sq374|youtube-lure|Thumbnail grabber variant
+youtube-video-downloader-5qfuw|youtube-lure|Video downloader variant
+youtube-video-downloader-fnkxw|youtube-lure|Video downloader variant
+youtube-watchar|youtube-lure|Watcher typo variant
+youtube-watcher-7|youtube-lure|Watcher variant
+youtube-watcher-a|youtube-lure|Watcher variant
+yt-watcher|youtube-lure|YouTube abbreviated variant
+zohoclaw|typosquat|Zoho+Claw mashup
 ```
 
 </details>
@@ -362,6 +453,40 @@ telegram-bot|messaging-lure|Telegram bot lures
 
 </details>
 
+#### Known Vulnerability Version Matching
+
+`openclaw_vulnerabilities.csv` is synced from a remote repository at:
+
+```
+https://github.com/knownsec/openclaw-security/blob/main/docs/openclaw_vulnerabilities.csv
+```
+
+During each audit or Day 0 deployment, first attempt to download the latest version to `$CLAW_HOME/workspace/security/ioc-blocklist/openclaw_vulnerabilities.csv`. If the download fails, use the existing local copy. Example download command:
+
+```bash
+curl -sSL -o "$CLAW_HOME/workspace/security/ioc-blocklist/openclaw_vulnerabilities.csv" \
+  "https://raw.githubusercontent.com/knownsec/openclaw-security/main/docs/openclaw_vulnerabilities.csv"
+```
+
+The `Affected Versions` field in `openclaw_vulnerabilities.csv` uses version range expressions with varied formats. You must support the following syntax during parsing:
+
+| Syntax | Meaning | Example |
+|---|---|---|
+| `<= X` / `< X` | Less than or equal to / less than version X | `<= 2026.3.7` |
+| `>= X` / `> X` | Greater than or equal to / greater than version X | `>= 2026.2.13` |
+| `= X` | Exact version match | `= 2026.3.1` |
+| `>= X, < Y` or `>= X < Y` | Range: X ≤ version < Y (comma/space separators) | `>= 2026.1.29, < 2026.2.1` |
+| `>= X <= Y` | Range: X ≤ version ≤ Y | `>= 2026.2.13 <= 2026.3.1` |
+| `<= X \|\| = Y` | OR condition: match if either is satisfied | `<=2026.2.19-2 \|\| =2026.2.19` |
+
+**Version number parsing rules**:
+- Strip `v` prefix (e.g., `v2026.1.29` → `2026.1.29`)
+- Split version by `.` into segments, compare numerically per segment
+- Patch suffixes (e.g., `-2` in `2026.2.19-2`, `-beta.1` in `2026.1.29-beta.1`): numeric suffixes are treated as patch revision numbers for sorting; non-numeric suffixes (e.g., `beta`) sort before the same version's stable release
+- `||` in expressions is OR logic; `,` and space-separated conditions are AND logic
+
+**Matching flow**: Obtain the current OpenClaw version (`openclaw --version`), compare against each vulnerability's `Affected Versions` in the CSV row by row. Matching vulnerabilities are sorted by severity (Critical > High > Moderate > Low) in the output.
+
 After deployment:
 1. Tighten permissions on the `ioc-blocklist/` directory (`chmod 700` / `icacls`) to prevent tampering
 2. Generate hash baselines for all IOC files and append them to `$CLAW_HOME/.config-baseline.sha256`
@@ -397,7 +522,7 @@ Check whether a Git remote repository is configured for disaster recovery. If no
 
 ### 1.13 Initial Full Audit
 
-Autonomously execute a complete 20-item audit as defined in Section 5 and save the report locally.
+Autonomously execute a complete 21-item audit as defined in Section 5 and save the report locally.
 
 ### 1.14 Push Day 0 Report → Await Human Confirmation
 
@@ -418,11 +543,11 @@ State directory: $CLAW_HOME path
  7. Hash baseline:     openclaw.json SHA256 recorded
  8. Network exposure:  <no exposure found / N items found, flagged>
  9. Remote access:     SSH password auth disabled / authorized_keys audited / <other findings>
-10. IOC intel DB:      Deployed N C2 IPs, M malicious domains, K file hashes, P malicious publishers, Q naming patterns
+10. IOC intel DB:      Deployed N C2 IPs, M malicious domains, K file hashes, P malicious publishers, R known malicious skill names, Q naming patterns
 11. AGENTS.md:         Command classification rules + audit trigger conditions + config baseline written
 12. Audit script:      Deployed, locked, cron registered
 13. Disaster recovery: Git repository initialized / <or: human needs to provide remote repository URL>
-14. Initial audit:     20-item indicator result summary
+14. Initial audit:     21-item indicator result summary
 
 Items awaiting human confirmation:
 - <list items requiring human decision, e.g.: unknown public key found in authorized_keys — remove?>
@@ -460,9 +585,11 @@ Before performing full-text threat scanning, first match the extension against I
 
 Read `malicious-publishers.txt` and compare the extension's publisher (ClawHub username or GitHub account) against the blocklist. On a hit, mark as **BLOCK** and note the associated attack campaign in the report.
 
-#### 2.2.2 Skill Name Pattern Matching
+#### 2.2.2 Skill Name and Naming Pattern Matching
 
-Read `malicious-skill-patterns.txt` and match the extension's slug/name against each regex pattern. On a hit, mark as **WARN** (a naming pattern match does not confirm malice, but should significantly increase scrutiny). The following categories trigger a direct **BLOCK**: `typosquat`, `exfil-skill`, `reverse-shell`, `malware-installer`.
+**Exact name matching**: Read `malicious-skill-names.txt` and compare the extension's slug/name against the known malicious skill name list using exact matching. Any hit is treated as a confirmed malicious skill — mark as **BLOCK**.
+
+**Regex pattern matching**: Read `malicious-skill-patterns.txt` and match the extension's slug/name against each regex pattern. On a hit, mark as **WARN** (a naming pattern match does not confirm malice, but should significantly increase scrutiny). The following categories trigger a direct **BLOCK**: `typosquat`, `exfil-skill`, `reverse-shell`, `malware-installer`.
 
 #### 2.2.3 File Hash Comparison
 
@@ -652,7 +779,7 @@ Save snapshots to a temporary directory and diff against the current state after
 
 **Reporting principle: Full explicit reporting.** Every indicator, whether normal or not, must be listed individually in the push summary. "No anomaly, no report" is strictly prohibited — silence breeds suspicion. Detailed reports are simultaneously saved locally.
 
-### 5.2 Coverage Indicators (20 Items)
+### 5.2 Coverage Indicators (21 Items)
 
 | # | Check Item | Method | Platform Differences |
 |---|---|---|---|
@@ -676,6 +803,7 @@ Save snapshots to a temporary directory and diff against the current state after
 | 18 | Environment baseline drift | Current state vs. Day 0 snapshot (including network exposure re-check: Tailscale Funnel, Docker ports, mDNS broadcast) | Detection commands vary by platform |
 | 19 | Network IOC detection | Check whether active network connections hit known malicious C2 IPs and domains in the IOC intelligence database (see detailed method below) | `ss`+`getent` / `lsof`+`nslookup` / `Get-NetTCPConnection`+`Resolve-DnsName` |
 | 20 | IOC intelligence database freshness | Check the last modified time of all files in `ioc-blocklist/`; mark `WARN` if not updated in 14+ days, `CRITICAL` if 30+ days | Universal |
+| 21 | Known vulnerability version matching | Sync `openclaw_vulnerabilities.csv` from remote, obtain current OpenClaw version (`openclaw --version`), parse each vulnerability's affected version range expression and compare against current version; matching vulnerabilities sorted by severity, Critical/High hits marked `WARN`, any Critical hit marked `CRITICAL` | Universal |
 
 #### Item 19: Network IOC Detection — Detailed Method
 
@@ -706,7 +834,7 @@ For connections that hit IOCs, trace the associated process:
 - Record process start time, command-line arguments, and parent process
 - If the process belongs to an installed extension, also flag that extension as suspicious and trigger an extension integrity re-check (item 15)
 
-> Disaster recovery sync automatically executes `git commit + push` after all 20 audit items complete; push failures are logged as warnings and do not block the preceding 20 items.
+> Disaster recovery sync automatically executes `git commit + push` after all 21 audit items complete; push failures are logged as warnings and do not block the preceding 20 items.
 
 ### 5.3 Registration
 
@@ -768,6 +896,7 @@ Platform: <linux|macos|windows>
 18. Env drift:         PASS - listening ports/services/firewall/network exposure match baseline
 19. Network IOC:       PASS - active connections did not match any known C2 IPs or malicious domains (checked N connections)
 20. IOC freshness:     PASS - intelligence database last updated YYYY-MM-DD (N days ago)
+21. Vuln check:        PASS - Current version X.Y.Z not affected by known vulnerabilities (checked N CVE/GHSA)
 
 DR sync: PASS - pushed to private repository
 
@@ -862,7 +991,7 @@ Proactively remind the human once a month to perform a recovery drill (or autono
 - [ ] Deploy IOC threat intelligence database to `$CLAW_HOME/workspace/security/ioc-blocklist/` (including C2 IPs, malicious domains, file hashes, malicious publishers, naming patterns)
 - [ ] Lock IOC intelligence files and generate hash baseline
 - [ ] Write command classification rules + audit trigger conditions + config baseline expected values to `AGENTS.md`
-- [ ] Write audit script covering 20 indicators
+- [ ] Write audit script covering 21 indicators
 - [ ] Register cron scheduled task
 - [ ] Lock audit script
 - [ ] Initialize disaster recovery Git repository (if human needs to provide remote URL, note in report)
@@ -875,5 +1004,6 @@ Proactively remind the human once a month to perform a recovery drill (or autono
 - [ ] Automatically execute post-task audits when trigger conditions are met (including network IOC quick comparison)
 - [ ] Check IOC intelligence source updates weekly to maintain database freshness (WARN if not updated in 14+ days, CRITICAL if 30+ days)
 - [ ] Remind the human monthly (or autonomously execute) disaster recovery drill
+- [ ] Execute known vulnerability version matching check after each version upgrade or vulnerability database update
 - [ ] Continuously monitor and update threat detection rule library
 - [ ] Periodically evaluate the injection attack resistance of the LLM model in use; adjust alert thresholds as necessary

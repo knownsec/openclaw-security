@@ -76,7 +76,7 @@ As of March 4, 2026, the GitHub Advisory Database has recorded as many as 245 vu
 
 ![openclaw_vulns](./images/openclaw_vulns.png)
 
-We have summarized the recorded vulnerabilities, details available here: [openclaw_vulnerabilities.xlsx](openclaw_vulnerabilities.xlsx)
+We have summarized the recorded vulnerabilities, details available here: [openclaw_vulnerabilities.csv](openclaw_vulnerabilities.csv)
 
 Statistical analysis of the recorded vulnerabilities reveals they are mainly concentrated in the following categories:
 

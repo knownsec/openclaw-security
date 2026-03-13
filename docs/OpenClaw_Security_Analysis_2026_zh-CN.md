@@ -76,7 +76,7 @@ OpenClaw 采用分层架构：
 
 ![openclaw_vulns](./images/openclaw_vulns.png)
 
-我们对收录的漏洞进行了汇总，详见：[openclaw_vulnerabilities.xlsx](openclaw_vulnerabilities.xlsx)
+我们对收录的漏洞进行了汇总，详见：[openclaw_vulnerabilities.csv](openclaw_vulnerabilities.csv)
 
 并对收录的漏洞进行统计分析，发现主要集中于以下类别：
 

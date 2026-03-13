@@ -1,0 +1,259 @@
+No.,Vulnerability Title,Vulnerability ID,Severity,Affected Versions,Vulnerability Link
+1,skills-install-download can be redirected outside the tools root by rebinding the validated base path,GHSA-vhwf-4x96-vqx2,Moderate,<= 2026.3.7,https://github.com/openclaw/openclaw/security/advisories/GHSA-vhwf-4x96-vqx2
+2,MS Teams sender allowlist bypass when route allowlist is configured and sender allowlist is empty,GHSA-g7cr-9h7q-4qxq,Moderate,<= 2026.3.7,https://github.com/openclaw/openclaw/security/advisories/GHSA-g7cr-9h7q-4qxq
+3,Dashboard leaked gateway auth material via browser URL/query and localStorage,GHSA-rchv-x836-w7xp,High,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-rchv-x836-w7xp
+4,hooks count non-POST requests toward auth lockout,GHSA-6rmx-gvvg-vh6j,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-6rmx-gvvg-vh6j
+5,fetch-guard forwards custom authorization headers across cross-origin redirects,GHSA-6mgf-v5j7-45cr,High,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-6mgf-v5j7-45cr
+6,Cross-account sender authorization expansion in `/allowlist ... --store` account scoping,GHSA-pjvx-rx66-r3fg,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-pjvx-rx66-r3fg
+7,`operator.write` chat.send could reach admin-only config writes,GHSA-hfpr-jhpq-x4rm,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-hfpr-jhpq-x4rm
+8,`system.run` env override filtering allowed dangerous helper-command pivots,GHSA-j425-whc4-4jgc,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-j425-whc4-4jgc
+9,Sandboxed /acp spawn requests could initialize host ACP sessions,GHSA-9q36-67vc-rrwg,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-9q36-67vc-rrwg
+10,system.run allow-always persistence included shell-commented payload tails,GHSA-9q2p-vc84-2rwm,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-9q2p-vc84-2rwm
+11,system.run wrapper-depth boundary could skip shell approval gating,GHSA-r6qf-8968-wj9q,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-r6qf-8968-wj9q
+12,system.run allowlist approval parsing missed PowerShell encoded-command wrappers,GHSA-3h2q-j2v4-6w5r,Moderate,<= 2026.3.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-3h2q-j2v4-6w5r
+13,system.run approvals did not bind mutable script operands across approval and execution,GHSA-8g75-q649-6pv6,Moderate,<= 2026.3.7,https://github.com/openclaw/openclaw/security/advisories/GHSA-8g75-q649-6pv6
+14,Discord voice transcript owner-flag omission could expose owner-only tools in mixed-trust channels,GHSA-wpg9-4g4v-f9rc,Moderate,<= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-wpg9-4g4v-f9rc
+15,Node camera URL payload host-binding bypass allowed gateway fetch pivots,GHSA-2858-xg23-26fp,Moderate,>= 2026.2.13 <= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-2858-xg23-26fp
+16,ZIP extraction race could write outside destination via parent symlink rebind,GHSA-r54r-wmmq-mh84,Moderate,<= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-r54r-wmmq-mh84
+17,stageSandboxMedia destination symlink traversal can overwrite files outside sandbox workspace,GHSA-cfvj-7rx7-fc7c,Moderate,<= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-cfvj-7rx7-fc7c
+18,Encoded-path auth bypass in plugin `/api/channels` route classification,GHSA-v865-p3gq-hw6m,Moderate,<= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-v865-p3gq-hw6m
+19,web tools strict URL guard could lose DNS pinning when env proxy is configured,GHSA-8mvx-p2r9-r375,High,<= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-8mvx-p2r9-r375
+20,Node system.run approval hardening wrapper semantic drift can execute unintended local scripts,GHSA-h3rm-6x7g-882f,Moderate,= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-h3rm-6x7g-882f
+21,Sandboxed sessions_spawn(runtime="acp") bypassed sandbox inheritance and allowed host ACP initialization,GHSA-474h-prjg-mmw3,High,<=2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-474h-prjg-mmw3
+22,Unified root-bound write hardening for browser output and related path-boundary flows,GHSA-3pxq-f3cp-jmxp,Moderate,<= 2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-3pxq-f3cp-jmxp
+23,Pre-auth webhook body parsing can enable unauthenticated slow-request DoS,GHSA-x4vp-4235-65hg,Moderate,<=2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-x4vp-4235-65hg
+24,skills-install-download: tar.bz2 extraction bypassed archive safety parity checks (local DoS),GHSA-77hf-7fqf-f227,Moderate,<=2026.3.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-77hf-7fqf-f227
+25,Browser control startup could continue unauthenticated after auth bootstrap failure,GHSA-vpj2-69hf-rppw,Moderate,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-vpj2-69hf-rppw
+26,Unbounded memory growth in Zalo webhook via query-string key churn (unauthenticated DoS),GHSA-wr6m-jg37-68xh,Moderate,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-wr6m-jg37-68xh
+27,Authorization mismatch allowed write-scope agent runs to reach owner-only tools,GHSA-jr6x-2q95-fh2g,High,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-jr6x-2q95-fh2g
+28,Unicode canonicalization drift in node metadata policy classification could broaden node allowlists,GHSA-392f-ggf5-fp3c,Moderate,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-392f-ggf5-fp3c
+29,"system.run approvals did not bind PATH-token executable identity, enabling post-approval executable rebind",GHSA-q399-23r3-hfx4,High,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-q399-23r3-hfx4
+30,Sandboxed sessions_spawn now enforces sandbox inheritance for cross-agent spawns,GHSA-p7gr-f84w-hqg5,High,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-p7gr-f84w-hqg5
+31,Sandbox media TOCTOU could read files outside sandbox root,GHSA-7xmq-g46g-f8pv,Moderate,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-7xmq-g46g-f8pv
+32,TOCTOU symlink race in writeFileWithinRoot could create or truncate files outside root boundaries,GHSA-x82f-27x3-q89c,Moderate,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-x82f-27x3-q89c
+33,Unauthorized sender bypass in stop triggers and /models command authorization,GHSA-8m9v-xpgf-g99m,Moderate,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-8m9v-xpgf-g99m
+34,ACPX Windows wrapper shell fallback allowed cwd injection in specific paths,GHSA-6f6j-wx9w-ff4j,High,">= 2026.2.26, < 2026.3.1",https://github.com/openclaw/openclaw/security/advisories/GHSA-6f6j-wx9w-ff4j
+35,web_search citation redirect SSRF via private-network-allowing policy,GHSA-g99v-8hwm-g76g,Moderate,<= 2026.2.26,https://github.com/openclaw/openclaw/security/advisories/GHSA-g99v-8hwm-g76g
+36,Node system.run approval bypass via parent-symlink cwd rebind,GHSA-f7ww-2725-qvw2,Moderate,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-f7ww-2725-qvw2
+37,Cross-account DM pairing authorization bypass via unscoped pairing store access,GHSA-vjp8-wprm-2jw9,Low,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-vjp8-wprm-2jw9
+38,voice-call Twilio replay dedupe now bound to authenticated webhook identity,GHSA-gcj7-r3hg-m7w6,Low,<=2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-gcj7-r3hg-m7w6
+39,Microsoft Teams media fetch SSRF hardening: unified guarded fetch across Graph and attachment paths,GHSA-7qf6-h84j-8fq4,Moderate,<=2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-7qf6-h84j-8fq4
+40,BlueBubbles group allowlist mismatch via DM pairing-store fallback,GHSA-25pw-4h6w-qwvm,Low,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-25pw-4h6w-qwvm
+41,Node system.run approval context-binding weakness in approval-enabled host=node flows,GHSA-hjvp-qhm6-wrh2,Moderate,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-hjvp-qhm6-wrh2
+42,DM pairing-store identities could satisfy group allowlist authorization,GHSA-jv6r-27ww-4gw4,Moderate,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-jv6r-27ww-4gw4
+43,Gateway plugin auth bypass via encoded dot-segment traversal in protected /api/channels paths,GHSA-mwxv-35wr-4vvj,High,<=2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-mwxv-35wr-4vvj
+44,Signal group allowlist authorization bypass via DM pairing-store leakage,GHSA-wm8r-w8pf-2v6w,Low,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-wm8r-w8pf-2v6w
+45,Node reconnect metadata spoofing could bypass platform-based node command policy,GHSA-r65x-2hqr-j5hf,High,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-r65x-2hqr-j5hf
+46,Sandbox dangling-symlink alias handling could bypass workspace-only write boundary,GHSA-qcc4-p59m-p54m,High,<=2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-qcc4-p59m-p54m
+47,workspace path guard bypass on non-existent out-of-root symlink leaf,GHSA-mgrq-9f93-wpp5,High,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-mgrq-9f93-wpp5
+48,LINE group allowlist scope mismatch with DM pairing-store entries,GHSA-gp3q-wpq4-5c5h,High,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-gp3q-wpq4-5c5h
+49,Slack system events bypass sender authorization in member and message subtype handlers,GHSA-v8cg-4474-49v8,Moderate,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-v8cg-4474-49v8
+50,/api/channels gateway-auth boundary bypass via path canonicalization mismatch,GHSA-8j2w-6fmm-m587,Moderate,<= 2026.2.25,https://github.com/openclaw/openclaw/security/advisories/GHSA-8j2w-6fmm-m587
+51,IPv6 multicast SSRF classifier bypass,GHSA-h97f-6pqj-q452,Low,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-h97f-6pqj-q452
+52,Nextcloud Talk webhook replay could trigger duplicate inbound processing,GHSA-r9q5-c7qc-p26w,Moderate,<=2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-r9q5-c7qc-p26w
+53,macOS beta onboarding exposed PKCE verifier via OAuth state,GHSA-6g25-pc82-vfwp,Low,<=2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-6g25-pc82-vfwp
+54,Gateway agents.files symlink escape allowed out-of-workspace file read/write,GHSA-fgvx-58p6-gjwc,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-fgvx-58p6-gjwc
+55,Unpaired device identity can bypass operator pairing and self-assign operator scopes with shared auth,GHSA-553v-f69r-656j,Moderate,>= 2026.2.22 <= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-553v-f69r-656j
+56,"Signal reaction-only status events could, in limited cases, be enqueued before access checks",GHSA-792q-qw95-f446,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-792q-qw95-f446
+57,Telegram message_reaction authorization bypass allows unauthorized system-event injection,GHSA-qj22-xqjr-v83v,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-qj22-xqjr-v83v
+58,Browser trace/download path symlink escape in temp output handling,GHSA-36h3-7c54-j27r,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-36h3-7c54-j27r
+59,Discord DM reaction ingress missed dmPolicy/allowFrom checks in restricted setups,GHSA-354r-7mfh-7rh2,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-354r-7mfh-7rh2
+60,Trusted-proxy Control UI pairing bypass allowed unpaired node sessions,GHSA-vvgp-4c28-m3jm,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-vvgp-4c28-m3jm
+61,system.run approval identity mismatch could execute a different binary than displayed,GHSA-hwpq-rrpf-pgcq,High,<=2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-hwpq-rrpf-pgcq
+62,Hardlink alias checks could bypass workspace-only file boundaries in specific configurations,GHSA-3jx4-q2m7-r496,High,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-3jx4-q2m7-r496
+63,Slack reaction/pin sender-policy consistency issue in non-message ingress,GHSA-rm2p-j3r7-4x4j,Low,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-rm2p-j3r7-4x4j
+64,system.run approval TOCTOU via mutable symlink cwd target on node host,GHSA-mwcg-wfq3-4gjc,Moderate,<=2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-mwcg-wfq3-4gjc
+65,Sandbox media fallback tmp symlink alias bypass allows host file reads outside sandboxRoot,GHSA-xmv6-r34m-62p4,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-xmv6-r34m-62p4
+66,MS Teams fileConsent/invoke missing conversation binding allowed cross-conversation pending-upload consumption,GHSA-j26j-7qc4-3mrf,Moderate,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-j26j-7qc4-3mrf
+67,Slack interactive callbacks could skip configured sender checks in some shared-workspace flows,GHSA-x2ff-j5c2-ggpr,High,<= 2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-x2ff-j5c2-ggpr
+68,Browser-origin WebSocket auth hardening gap could enable loopback password brute-force chains,GHSA-jmmg-jqc7-5qf4,High,<=2026.2.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-jmmg-jqc7-5qf4
+69,Zalo group sender allowlist bypass permits unauthorized GROUP dispatch,GHSA-534w-2vm4-89xr,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-534w-2vm4-89xr
+70,"Synology Chat dmPolicy=allowlist failed open on empty allowedUserIds, allowing unauthorized agent dispatch",GHSA-gw85-xp4q-5gp9,Moderate,">= 2026.2.22, <= 2026.2.23",https://github.com/openclaw/openclaw/security/advisories/GHSA-gw85-xp4q-5gp9
+71,safeBins static default trusted dirs allow writable-dir binary hijack (`jq`),GHSA-5gj7-jf77-q2q2,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-5gj7-jf77-q2q2
+72,Temporary path handling could write outside OpenClaw temp boundary,GHSA-33hm-cq8r-wc49,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-33hm-cq8r-wc49
+73,Message action attachment hydration bypasses local media root checks when sandboxRoot is unset,GHSA-fqcm-97m6-w7rm,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-fqcm-97m6-w7rm
+74,system.run shell-wrapper positional argv carriers could execute hidden commands under misleading approval text,GHSA-6rcp-vxwf-3mfp,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-6rcp-vxwf-3mfp
+75,Sandbox bind validation could bypass allowed-root and blocked-path checks via symlink-parent missing-leaf paths,GHSA-m8v2-6wwh-r4gc,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-m8v2-6wwh-r4gc
+76,Workspace-only sandbox guard mismatch for @-prefixed absolute paths,GHSA-27cr-4p5m-74rj,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-27cr-4p5m-74rj
+77,Telegram: Unauthorized Senders Trigger Media Download and Disk Write Before Access Check,GHSA-h656-5vcf-cm23,Moderate,<=2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-h656-5vcf-cm23
+78,sandbox network isolation bypass via docker.network=container:<id>,GHSA-ww6v-v748-x7g9,Low,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-ww6v-v748-x7g9
+79,Dispatch-wrapper depth-cap mismatch can bypass shell-wrapper approval gating in system.run allowlist mode,GHSA-ccg8-46r6-9qgj,Moderate,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-ccg8-46r6-9qgj
+80,Native prompt image auto-load did not honor tools.fs.workspaceOnly in sandboxed runs,GHSA-9f72-qcpw-2hxc,High,<= 2026.2.23,https://github.com/openclaw/openclaw/security/advisories/GHSA-9f72-qcpw-2hxc
+81,DUPLICATE of GHSA-3c6h-g97w-fg78: safeBins denied flags can be bypassed via GNU long-option abbreviations,GHSA-8j9w-9pm5-pv8m,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-8j9w-9pm5-pv8m
+82,ACP permission auto-approval bypass via untrusted tool metadata,GHSA-7jx5-9fjg-hp4m,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-7jx5-9fjg-hp4m
+83,exec allowlist/safeBins policy-runtime mismatch via env -S wrapper interpretation,GHSA-796m-2973-wc5q,High,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-796m-2973-wc5q
+84,exec allow-always can be bypassed via unrecognized multiplexer shell wrappers (busybox/toybox sh -c),GHSA-gwqp-86q6-w47g,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-gwqp-86q6-w47g
+85,commands.allowFrom sender authorization accepted conversation identifiers via ctx.From,GHSA-2ch6-x3g4-7759,Moderate,<=2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-2ch6-x3g4-7759
+86,voice-call Twilio webhook replay could bypass manager dedupe because normalized event IDs were randomized per parse,GHSA-vqx8-9xxw-f2m7,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-vqx8-9xxw-f2m7
+87,image tool bypasses tools.fs.workspaceOnly on sandbox mount paths and exfiltrates out-of-workspace images,GHSA-q6qf-4p5j-r25g,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-q6qf-4p5j-r25g
+88,Experimental apply_patch may bypass workspace-only checks in opt-in sandbox mounts (off by default),GHSA-h9xm-j4qg-fvpg,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-h9xm-j4qg-fvpg
+89,allowlist exec-guard bypass via env -S,GHSA-48wf-g7cp-gr3m,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-48wf-g7cp-gr3m
+90,Node exec approvals could be replayed across nodes,GHSA-6x2m-hqfw-hvpj,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-6x2m-hqfw-hvpj
+91,iOS deep link (openclaw://agent) can trigger gateway agent requests without local confirmation,GHSA-2j9j-gf59-p4p5,Low,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-2j9j-gf59-p4p5
+92,tools.exec.safeBins sort long-option abbreviation bypass can skip exec approval in allowlist mode,GHSA-3c6h-g97w-fg78,High,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-3c6h-g97w-fg78
+93,shell-env trusted-prefix fallback allowed attacker-controlled binary execution via $SHELL,GHSA-p4wh-cr8m-gm6c,Moderate,">= 2026.2.22, <= 2026.2.22-2",https://github.com/openclaw/openclaw/security/advisories/GHSA-p4wh-cr8m-gm6c
+94,non-default autoAllowSkills setting could bypass on-miss exec prompt,GHSA-7ff8-xjh3-mgh6,Moderate,<=2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-7ff8-xjh3-mgh6
+95,HTML injection via unvalidated image MIME type in data-URL interpolation,GHSA-2ww6-868g-2c56,Moderate,<= 2026.2.22,https://github.com/openclaw/openclaw/security/advisories/GHSA-2ww6-868g-2c56
+96,Stored XSS in exported session HTML viewer via markdown/raw-HTML rendering,GHSA-r294-2894-92j3,Moderate,<= 2026.2.22-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-r294-2894-92j3
+97,"voice-call media stream validated streams after upgrade, which could allow pre-start unauthenticated sockets to increase resource pressure",GHSA-mfg5-7q5g-f37j,High,<= 2026.2.21,https://github.com/openclaw/openclaw/security/advisories/GHSA-mfg5-7q5g-f37j
+98,Non-default safeBins sort configuration can bypass intended allowlist approval constraints,GHSA-vmqr-rc7x-3446,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-vmqr-rc7x-3446
+99,tools.exec.safeBins trusted PATH directories allowed binary shadowing in allowlist mode,GHSA-qhrr-grqp-6x2g,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-qhrr-grqp-6x2g
+100,Avatar symlink traversal can expose out-of-workspace local files,GHSA-rx3g-mvc3-qfjf,Moderate,<=2026.2.21 || =2026.2.21-1 || =2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-rx3g-mvc3-qfjf
+101,allow-always wrapper persistence could bypass future approvals and enable command execution,GHSA-6j27-pc5c-m8w8,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-6j27-pc5c-m8w8
+102,system.run allowlist bypass via shell line-continuation command substitution,GHSA-9868-vxmx-w862,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-9868-vxmx-w862
+103,Elevated allowFrom matching tightened for sender-scoped authorization,GHSA-f6h3-846h-2r8w,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-f6h3-846h-2r8w
+104,Typed sender-key matching for toolsBySender prevents identity-collision policy bypass,GHSA-wpph-cjgr-7c39,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-wpph-cjgr-7c39
+105,Feishu allowFrom authorization bypass via display-name collision,GHSA-j4xf-96qf-rx69,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-j4xf-96qf-rx69
+106,Incomplete IPv4 special-use SSRF blocking in web fetch guard,GHSA-4rqq-w8v4-7p47,Low,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-4rqq-w8v4-7p47
+107,Shell-env fallback trusted startup env and could execute attacker-influenced login-shell paths,GHSA-5h2c-8v84-qpvr,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-5h2c-8v84-qpvr
+108,tools.exec.safeBins generic fallback allowed interpreter-style inline payload execution in allowlist mode,GHSA-8mf7-vv8w-hjr2,Low,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-8mf7-vv8w-hjr2
+109,system.run shell-wrapper env injection via SHELLOPTS/PS4 can bypass allowlist intent (RCE),GHSA-2fgq-7j6h-9rm4,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-2fgq-7j6h-9rm4
+110,Hook auth rate limiter bypass via IPv4-mapped IPv6 client key variants,GHSA-5847-rm3g-23mw,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-5847-rm3g-23mw
+111,Agent avatar symlink traversal in gateway session metadata,GHSA-9mph-4f7v-fmvh,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-9mph-4f7v-fmvh
+112,Gateway auth token reuse in owner ID prompt hashing fallback,GHSA-v6x2-2qvm-6gv8,Low,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-v6x2-2qvm-6gv8
+113,Hook transform path containment missed symlink-resolved escapes,GHSA-659f-22xc-98f2,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-659f-22xc-98f2
+114,Shell startup env injection bypasses system.run allowlist intent (RCE class),GHSA-xgf2-vxv2-rrmg,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-xgf2-vxv2-rrmg
+115,Exec allowlist wrapper analysis did not unwrap env/shell dispatch chains,GHSA-jj82-76v6-933r,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-jj82-76v6-933r
+116,macOS optional allowlist basename matching could bypass path-based policy,GHSA-7f4q-9rqh-x36p,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-7f4q-9rqh-x36p
+117,macOS `system.run` allowlist bypass via quoted command substitution,GHSA-9p38-94jf-hgjj,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-9p38-94jf-hgjj
+118,Inbound media downloads could exceed configured byte limits before rejection across multiple channels,GHSA-rxxp-482v-7mrh,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-rxxp-482v-7mrh
+119,MSTeams attachment redirect handling could bypass configured media host allowlists,GHSA-w76h-8m22-hpgh,Moderate,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-w76h-8m22-hpgh
+120,Control UI Static File Handler Follows Symlinks and Allows Out-of-Root File Read,GHSA-5ghc-98wh-gwwf,Low,<=2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-5ghc-98wh-gwwf
+121,Shell env fallback trusts unvalidated SHELL path from host environment,GHSA-f8mp-vj46-cq8v,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-f8mp-vj46-cq8v
+122,Node role device-identity bypass allows unauthorized node.event injection,GHSA-rv2q-f2h5-6xmg,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-rv2q-f2h5-6xmg
+123,BlueBubbles (optional plugin) pairing/allowlist mismatch when allowFrom is empty,GHSA-jwf4-8wf4-jf2m,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-jwf4-8wf4-jf2m
+124,Discord `allowFrom` slug-collision authorization bypass,GHSA-4cqv-h74h-93j4,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-4cqv-h74h-93j4
+125,Zip extraction symlink traversal could write outside destination,GHSA-jxrq-8fm4-9p58,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-jxrq-8fm4-9p58
+126,non-default configuration: manually adding sort to tools.exec.safeBins could bypass allowlist approval via --compress-program,GHSA-4gc7-qcvf-38wg,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-4gc7-qcvf-38wg
+127,Loopback CDP probe can leak Gateway token to local listener,GHSA-v3j7-34xh-6g3w,Moderate,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-v3j7-34xh-6g3w
+128,macOS companion app (beta): allowlist parsing mismatch for system.run shell chains,GHSA-5f9p-f3w2-fwch,Low,<= 2026.2.21-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-5f9p-f3w2-fwch
+129,Gateway tokenless Tailscale auth applied to HTTP routes,GHSA-hff7-ccv5-52f8,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-hff7-ccv5-52f8
+130,OpenClaw safeBins grep -e File Read Bypass (stdin-only policy bypass),GHSA-3xfw-4pmr-4xc5,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-3xfw-4pmr-4xc5
+131,"Browser navigation guard allowed non-network URL schemes, enabling authenticated browser-tool users to access file:// local files.",GHSA-45cg-2683-gfmq,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-45cg-2683-gfmq
+132,Windows system.run approval mismatch on cmd.exe /c trailing arguments,GHSA-5v6x-rfc3-7qfr,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-5v6x-rfc3-7qfr
+133,BlueBubbles beta plugin webhook auth hardening (remove passwordless fallback),GHSA-5mx2-2mgw-x8rm,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-5mx2-2mgw-x8rm
+134,ZDI-CAN-29312: OpenClaw Canvas Path Traversal Information Disclosure Vulnerability,GHSA-jq4x-98m3-ggq6,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-jq4x-98m3-ggq6
+135,ZDI-CAN-29311: OpenClaw Canvas Authentication Bypass Vulnerability,GHSA-vvjh-f6p9-5vcf,High,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-vvjh-f6p9-5vcf
+136,Improper Neutralization of Line Breaks in systemd Unit Generation Enables Local Command Execution (Linux),GHSA-vffc-f7r7-rx2w,High,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-vffc-f7r7-rx2w
+137,Runtime /debug override path accepted prototype-reserved keys,GHSA-62f6-mrcj-v8h5,Low,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-62f6-mrcj-v8h5
+138,Opt-in insecure Control UI auth over plaintext HTTP could allow privileged access in affected releases,GHSA-3cvx-236h-m9fj,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-3cvx-236h-m9fj
+139,BASH_ENV / ENV startup-file injection into spawned shell commands,GHSA-w9cg-v44m-4qv8,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-w9cg-v44m-4qv8
+140,Config env vars allowed startup env injection into service runtime,GHSA-8fmp-37rc-p5g7,Moderate,<=2026.2.19-2 || =2026.2.19,https://github.com/openclaw/openclaw/security/advisories/GHSA-8fmp-37rc-p5g7
+141,Improper X-Forwarded-For parsing behind trusted proxies allows client IP spoofing in security decisions,GHSA-2rgf-hm63-5qph,Low,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-2rgf-hm63-5qph
+142,Multiple E2E/test Dockerfiles run all processes as root,GHSA-w7j5-j98m-w679,High,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-w7j5-j98m-w679
+143,Chrome --no-sandbox disabled OS-level browser sandbox in sandbox browser container,GHSA-43x4-g22p-3hrq,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-43x4-g22p-3hrq
+144,Sandbox browser noVNC observer lacked VNC authentication,GHSA-25gx-x37c-7pph,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-25gx-x37c-7pph
+145,Canvas route hardening for mixed-trust deployments,GHSA-cjv3-m589-v3rx,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-cjv3-m589-v3rx
+146,Local File Exfiltration via MCP Tool Result MEDIA: Directive Injection,GHSA-jjgj-cpp9-cvpv,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-jjgj-cpp9-cvpv
+147,Skill env override host env injection,GHSA-82g8-464f-2mv7,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-82g8-464f-2mv7
+148,Windows Scheduled Task script generation allowed local command injection via unsafe cmd argument handling,GHSA-mqr9-vqhq-3jxw,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-mqr9-vqhq-3jxw
+149,Command Injection via unescaped environment assignments in Windows Scheduled Task script generation,GHSA-pj5x-38rw-6fph,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-pj5x-38rw-6fph
+150,OC-22: Reject symlinks in local skill packaging script,CVE-2026-27485,Low,<=2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-r6h2-5gqq-v5v6
+151,Discord moderation authorization used untrusted sender identity in tool-driven flows,CVE-2026-27484,Moderate,<=2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-wh94-p5m6-mr7j
+152,Windows Lobster shell fallback command injection in constrained fallback path,GHSA-fg3m-vhrr-8gj6,Low,>= 2026.1.21 <= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-fg3m-vhrr-8gj6
+153,Auth inconsistency on local Browser Extension Relay /extension endpoint,GHSA-pfv7-rr5m-qmv6,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-pfv7-rr5m-qmv6
+154,SSRF guard bypass via IPv6 transition over ISATAP,GHSA-8cp7-rp8r-mg77,Moderate,>=2026.1.20 <=2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-8cp7-rp8r-mg77
+155,ReDoS and regex injection via unescaped Feishu mention metadata in RegExp construction,GHSA-c6hr-w26q-c636,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-c6hr-w26q-c636
+156,iMessage remote attachment SCP hardening (strict host-key checks and remoteHost validation),GHSA-2mc2-g238-722j,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-2mc2-g238-722j
+157,Path traversal in Feishu media temp-file naming allows writes outside os.tmpdir(),GHSA-vj3g-5px3-gr46,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-vj3g-5px3-gr46
+158,Command injection via Windows shell fallback in Lobster tool execution,GHSA-7fcc-cw49-xm78,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-7fcc-cw49-xm78
+159,Plugin runtime command execution is part of trusted plugin boundary,GHSA-ff98-w8hj-qrxf,Low,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-ff98-w8hj-qrxf
+160,Shell command injection in exec allowlist mode via unquoted heredoc expansion,CVE-2026-27209,High,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-65rx-fvh6-r4h2
+161,Owner-only gateway tool access checks were incomplete in specific authenticated DM flows,GHSA-2hm8-rqrm-xfjq,Low,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-2hm8-rqrm-xfjq
+162,OC-91: WhatsApp reaction action bypasses JID authorization for allowFrom-restricted targets,CVE-2026-27158,Moderate,<= 2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-2prf-9cw7-fq62
+163,TTS model directives allowed provider switching by default,CVE-2026-27159,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-xwcr-v472-8hhr
+164,ACP resource_link metadata prompt interpolation allowed prompt-injection content via title/URI fields,CVE-2026-27165,Moderate,<=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-74xj-763f-264w
+165,OC-65: overflow compaction retry counter reset after truncation amplifies bounded retry/cost cycles,CVE-2026-27164,Low,>=2026.2.9 <=2026.2.19-2,https://github.com/openclaw/openclaw/security/advisories/GHSA-x2g4-7mj7-2hhj
+166,OC-53: ACP prompt-size checks missing in local stdio bridge could reduce responsiveness with very large inputs,CVE-2026-27576,Low,<=2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-cxpw-2g23-2vgw
+167,Harden cron webhook delivery against SSRF,CVE-2026-27488,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-w45g-5746-x9fp
+168,OpenClaw exec allowlist safeBins short-option bypass could permit arbitrary file write,GHSA-3x3x-h76w-hp98,Moderate,<=2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-3x3x-h76w-hp98
+169,OC-06: Arbitrary file read via $include directive,GHSA-56pc-6hvp-4gv4,High,<=2026.2.15,https://github.com/openclaw/openclaw/security/advisories/GHSA-56pc-6hvp-4gv4
+170,`tools.exec.safeBins` PATH-hijack allowed trojan binaries to bypass allowlist checks,GHSA-g75x-8qqm-2vxp,Moderate,>=2026.1.21 <2026.2.18,https://github.com/openclaw/openclaw/security/advisories/GHSA-g75x-8qqm-2vxp
+171,OpenClaw safeBins file-existence oracle information disclosure,GHSA-6c9j-x93c-rw6j,Moderate,<=2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-6c9j-x93c-rw6j
+172,safeBins stdin-only bypass via sort output and recursive grep flags,GHSA-4685-c5cp-vp95,Low,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-4685-c5cp-vp95
+173,Serialize sandbox registry writes to prevent races and delete-rollback corruption,GHSA-gq83-8q7q-9hfx,Moderate,<=2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-gq83-8q7q-9hfx
+174,Replace deprecated sandbox hash algorithm,GHSA-fh3f-q9qw-93j9,Moderate,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-fh3f-q9qw-93j9
+175,Sandbox config hash sorted primitive arrays and suppressed needed container recreation,CVE-2026-27007,Moderate,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-xxvh-5hwj-42pp
+176,OC-19: Unsanitized CWD path injection into LLM prompts,CVE-2026-27001,High,< 2026.2.15,https://github.com/openclaw/openclaw/security/advisories/GHSA-2qj5-gwg2-xwc4
+177,OC-13: Docker container escape via unvalidated bind mount config injection,CVE-2026-27002,Moderate,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-w235-x559-36mg
+178,OC-07: Session tool visibility hardening and Telegram webhook secret fallback,CVE-2026-27004,High,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-6hf3-mhgc-cm65
+179,Stored XSS in Control UI via unsanitized assistant name/avatar in inline script injection,CVE-2026-27009,Moderate,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-37gc-85xm-2ww6
+180,Sensitive file disclosure via stageSandboxMedia,GHSA-x9cf-3w63-rpq9,Moderate,<= 2026.2.17,https://github.com/openclaw/openclaw/security/advisories/GHSA-x9cf-3w63-rpq9
+181,Harden skill download target directory validation,CVE-2026-27008,Moderate,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-h7f7-89mm-pqh6
+182,Option injection in pre-commit hook can stage ignored files,GHSA-mmpf-jwf4-h3qv,Low,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-mmpf-jwf4-h3qv
+183,OC-17: Telegram bot token exposure via logs,CVE-2026-27003,Moderate,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-chf7-jq6g-qrwv
+184,Chutes manual OAuth state validation bypass can cause credential substitution,GHSA-7rcp-mxpq-72pj,Moderate,<= 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-7rcp-mxpq-72pj
+185,OC-31: Process Safety - Unvalidated PID Kill via SIGKILL in Process Cleanup,CVE-2026-27486,Low,< 2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-jfv4-h8mc-jcp8
+186,LFI in BlueBubbles media path handling,GHSA-rwj8-p9vq-25gv,High,<v2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-rwj8-p9vq-25gv
+187,OC-28: Prevent shell injection in macOS keychain credential write,CVE-2026-27487,High,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-4564-pvr2-qq4h
+188,Two SSRF via sendMediaFeishu and markdown image fetching in Feishu extension,GHSA-x22m-j5qq-j49m,High,< 2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-x22m-j5qq-j49m
+189,Local file disclosure via sendMediaFeishu in Feishu extension,CVE-2026-26321,High,< 2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-8jpq-5h99-ff5r
+190,Path traversal in browser trace/download output paths may allow arbitrary file writes outside OpenClaw temp directories,GHSA-gq9c-wg68-gwj2,High,< 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-gq9c-wg68-gwj2
+191,OC-02: Gateway /tools/invoke tool escalation + ACP permission auto-approval,GHSA-943q-mwmv-hhvh,High,<2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-943q-mwmv-hhvh
+192,Remote Code Execution via Node Invoke Approval Bypass in Gateway,GHSA-gv46-4xfq-jv58,Critical,< 2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-gv46-4xfq-jv58
+193,Authentication bypass in sandbox browser bridge server,GHSA-h9g4-589h-68xv,High,>=2026.1.29-beta.1 <2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-h9g4-589h-68xv
+194,Potential code execution via unsafe hook module path handling in Gateway,GHSA-v6c6-vqqg-w888,High,>=2026.1.5 <=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-v6c6-vqqg-w888
+195,OpenClaw log poisoning (indirect prompt injection) via WebSocket headers,GHSA-g27f-9qjv-22pm,Low,<= 2026.2.12,https://github.com/openclaw/openclaw/security/advisories/GHSA-g27f-9qjv-22pm
+196,Hook transform module path allows traversal and arbitrary JavaScript module loading,GHSA-7xhj-55q9-pc3m,Moderate,">= 2.0.0-beta3, <= 2026.2.13",https://github.com/openclaw/openclaw/security/advisories/GHSA-7xhj-55q9-pc3m
+197,Unsanitized session ID enables path traversal in transcript file operations,GHSA-5xfq-5mr7-426q,Moderate,<=2026.2.9,https://github.com/openclaw/openclaw/security/advisories/GHSA-5xfq-5mr7-426q
+198,Non-constant-time token comparison in hooks authentication,GHSA-jmm5-fvh5-gf4p,Moderate,< 2026.2.12,https://github.com/openclaw/openclaw/security/advisories/GHSA-jmm5-fvh5-gf4p
+199,Sandbox skill mirroring path traversal could write outside the sandbox workspace,GHSA-xw4p-pw82-hqr7,High,< 2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-xw4p-pw82-hqr7
+200,Config writes could persist resolved ${VAR} secrets to disk,GHSA-47q7-97xp-m272,Moderate,< 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-47q7-97xp-m272
+201,Path traversal (Zip Slip) in archive extraction during explicit installation commands,GHSA-v892-hwpg-jwqp,High,>=2026.1.16-2 <2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-v892-hwpg-jwqp
+202,missing authentication for local browser-control endpoints,GHSA-qpjj-47vm-64pj,High,">= 2026.1.5, <= 2026.2.9",https://github.com/openclaw/openclaw/security/advisories/GHSA-qpjj-47vm-64pj
+203,Inter-session prompts could be treated as direct user instructions,GHSA-w5c7-9qqw-6645,Moderate,<2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-w5c7-9qqw-6645
+204,Hook Session Key Override Enables Targeted Cross-Session Routing,GHSA-hv93-r4j3-q65f,High,">= 2.0.0-beta3, < 2026.2.12",https://github.com/openclaw/openclaw/security/advisories/GHSA-hv93-r4j3-q65f
+205,Chrome extension relay binds publicly due to wildcard treated as loopback,GHSA-qw99-grcx-4pvm,Moderate,>=2026.1.14-1 <2026.2.12,https://github.com/openclaw/openclaw/security/advisories/GHSA-qw99-grcx-4pvm
+206,Arbitrary transcript path file write via gateway sessionFile,GHSA-64qx-vpxx-mvqf,High,< 2026.2.12,https://github.com/openclaw/openclaw/security/advisories/GHSA-64qx-vpxx-mvqf
+207,Path Traversal in Browser Download Functionality,CVE-2026-26972,Moderate,">=2026.1.12, <=2026.2.12",https://github.com/openclaw/openclaw/security/advisories/GHSA-xwjm-j929-xq7c
+208,Zip Slip path traversal in tar archive extraction,GHSA-p25h-9q54-ffvw,High,<2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-p25h-9q54-ffvw
+209,Web Fetch DoS via unbounded response parsing,GHSA-p536-vvpp-9mc8,Moderate,<=2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-p536-vvpp-9mc8
+210,OpenClaw macOS deep link confirmation truncation can conceal executed agent message,CVE-2026-26320,High,">= 2026.2.6-0, <= 2026.2.13",https://github.com/openclaw/openclaw/security/advisories/GHSA-7q2j-c4q5-rm27
+211,Google Chat spoofing access with allowlist authorized mutable email principal despite sender-ID mismatch,GHSA-chm2-m3w2-wcxm,Low,<=2026.1.24-3,https://github.com/openclaw/openclaw/security/advisories/GHSA-chm2-m3w2-wcxm
+212,Denial of service via unbounded URL-backed media fetch,GHSA-j27p-hq53-9wgc,High,<2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-j27p-hq53-9wgc
+213,Denial of service through large base64 media files allocating large buffers before limit checks,GHSA-w2cg-vxx6-5xjg,Moderate,<=2026.1.24-3,https://github.com/openclaw/openclaw/security/advisories/GHSA-w2cg-vxx6-5xjg
+214,Denial of service through unguarded archive extraction allowing high expansion/resource abuse (ZIP/TAR),GHSA-h89v-j3x9-8wqj,Moderate,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-h89v-j3x9-8wqj
+215,Denial of service via unbounded webhook request body buffering,GHSA-q447-rj3r-2cgh,High,<2026.2.12,https://github.com/openclaw/openclaw/security/advisories/GHSA-q447-rj3r-2cgh
+216,Cross-Site request forgery (CSRF) through loopback browser mutation endpoints,CVE-2026-26317,High,<=2026.1.24-3,https://github.com/openclaw/openclaw/security/advisories/GHSA-3fqr-4cg8-h96q
+217,Google Chat shared-path webhook target ambiguity allowed cross-account policy-context misrouting,GHSA-rq6g-px6m-c248,High,<=2026.1.24-3,https://github.com/openclaw/openclaw/security/advisories/GHSA-rq6g-px6m-c248
+218,Telegram allowlist authorization accepted mutable usernames,GHSA-mj5r-hh7j-4gxf,Moderate,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-mj5r-hh7j-4gxf
+219,"iMessage group allowlist authorization inherited DM pairing-store identities, enabling cross-context command authorization",CVE-2026-26328,Moderate,<=2026.1.24-3,https://github.com/openclaw/openclaw/security/advisories/GHSA-g34w-4xqq-h79m
+220,SSRF via attachment/media URL hydration,GHSA-wfp2-v9c7-fh79,Moderate,< 2026.2.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-wfp2-v9c7-fh79
+221,Unauthenticated discovery TXT records could steer routing and TLS pinning,CVE-2026-26327,High,<= 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-pv58-549p-qh99
+222,skills.status could leak secrets to operator.read clients,CVE-2026-26326,Moderate,<= 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-8mh7-phf8-xgfm
+223,Unauthenticated Nostr profile HTTP endpoints allow remote profile/config tampering,GHSA-mv9j-6xhh-g383,High,<=2026.2.9,https://github.com/openclaw/openclaw/security/advisories/GHSA-mv9j-6xhh-g383
+224,Webhook auth bypass when gateway is behind a reverse proxy (loopback remoteAddress trust),GHSA-xc7w-v5x6-cc87,Moderate,< 2026.2.12,https://github.com/openclaw/openclaw/security/advisories/GHSA-xc7w-v5x6-cc87
+225,Path traversal in browser upload allows local file read,CVE-2026-26329,High,<2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-cv7m-c9jx-vg7q
+226,Twilio voice-call webhook auth bypass when ngrok loopback compatibility is enabled,GHSA-c37p-4qqg-3p76,Moderate,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-c37p-4qqg-3p76
+227,SSRF in Image Tool Remote Fetch,GHSA-56f2-hvwg-5743,High,<=2026.2.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-56f2-hvwg-5743
+228,Gateway tool allowed unrestricted gatewayUrl override,CVE-2026-26322,High,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-g6q9-8fvw-f7rf
+229,SSRF in optional Tlon (Urbit) extension authentication,GHSA-pg2v-8xwh-qhcc,Moderate,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-pg2v-8xwh-qhcc
+230,Missing Webhook Authentication in Telnyx Provider Allows Unauthenticated Requests,CVE-2026-26319,High,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-4hg8-92x6-h2f3
+231,Path traversal in apply_patch could write/delete files outside the workspace,GHSA-r5fq-947m-xm57,High,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-r5fq-947m-xm57
+232,Command hijacking via unsafe PATH handling (bootstrapping + node-host PATH overrides),GHSA-jqpq-mgvm-f9r6,High,< 2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-jqpq-mgvm-f9r6
+233,Slack: dmPolicy=open allowed any DM sender to run privileged slash commands,GHSA-v773-r54f-q32w,Moderate,<= 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-v773-r54f-q32w
+234,Exec approvals: safeBins could bypass stdin-only constraints via shell expansion,GHSA-xvhf-x56f-2hpp,Moderate,<=2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-xvhf-x56f-2hpp
+235,Node host system.run rawCommand/command mismatch can bypass allowlist/approvals,CVE-2026-26325,High,<= 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-h3f9-mjwj-w476
+236,Gateway connect could skip device identity checks when auth.token was present but not yet validated,GHSA-rv39-79c4-7459,High,<=2026.2.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-rv39-79c4-7459
+237,Exec allowlist bypass via command substitution/backticks inside double quotes,GHSA-3hcm-ggvf-rch5,High,<= 2026.2.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-3hcm-ggvf-rch5
+238,Potential access-group authorization bypass if channel type lookup fails,GHSA-fhvm-j76f-qmjv,High,<=2026.2.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-fhvm-j76f-qmjv
+239,Windows cmd.exe parsing may bypass exec allowlist/approval gating,GHSA-qj77-c3c8-9c3q,High,<= 2026.2.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-qj77-c3c8-9c3q
+240,Inbound allowlist policy bypass in voice-call extension (empty caller ID + suffix matching),GHSA-4rj2-gpmh-qq5x,Critical,<= 2026.2.1,https://github.com/openclaw/openclaw/security/advisories/GHSA-4rj2-gpmh-qq5x
+241,Path Traversal in Plugin Installation,GHSA-qrq5-wjgg-rvqw,Critical,">= 2026.1.29-beta.1, < 2026.2.1",https://github.com/openclaw/openclaw/security/advisories/GHSA-qrq5-wjgg-rvqw
+242,MS Teams inbound attachment downloader leaks bearer tokens to allowlisted suffix domains,GHSA-7vwx-582j-j332,High,<= 2026.1.30,https://github.com/openclaw/openclaw/security/advisories/GHSA-7vwx-582j-j332
+243,Authorization bypass: `operator.write` can resolve exec approvals via `chat.send` -> `/approve`,GHSA-mqpw-46fh-299h,High,< 2026.2.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-mqpw-46fh-299h
+244,Nextcloud Talk allowlist bypass via actor.name display name spoofing,GHSA-r5h9-vjqc-hq3r,High,<=2026.2.2,https://github.com/openclaw/openclaw/security/advisories/GHSA-r5h9-vjqc-hq3r
+245,Matrix allowlist bypass via displayName and cross-homeserver localpart matching,GHSA-rmxw-jxxx-4cpc,Moderate,">= 2026.1.14-1, < 2026.2.2",https://github.com/openclaw/openclaw/security/advisories/GHSA-rmxw-jxxx-4cpc
+246,BlueBubbles webhook auth bypass via loopback proxy trust,CVE-2026-26316,High,< 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-pchc-86f6-8758
+247,"Twitch allowFrom not enforced in optional plugin, unauthorized chat users can trigger agent pipeline",GHSA-33rq-m5x2-fvgf,High,">= 2026.1.29, < 2026.2.1",https://github.com/openclaw/openclaw/security/advisories/GHSA-33rq-m5x2-fvgf
+248,SSRF guard bypass via full-form IPv4-mapped IPv6 (loopback / metadata reachable),CVE-2026-26324,High,<= 2026.2.13,https://github.com/openclaw/openclaw/security/advisories/GHSA-jrvc-8ff5-2f9f
+249,OpenClaw may disclose local files via MEDIA: path staging,CVE-2026-25475,Moderate,<= 2026.1.30,https://github.com/openclaw/openclaw/security/advisories/GHSA-r8g4-86fx-92mq
+250,Command injection in maintainer clawtributors updater,CVE-2026-26323,Moderate,>=2026.1.8 <2026.2.14,https://github.com/openclaw/openclaw/security/advisories/GHSA-m7x8-2w3w-pr42
+251,Telegram webhook requests may be accepted without verifying secret token when webhookSecret is missing,CVE-2026-25474,High,<=2026.1.30,https://github.com/openclaw/openclaw/security/advisories/GHSA-mp5h-m6qj-6292
+252,Browser Relay /cdp websocket missing auth could allow cross-tab cookie access,GHSA-mr32-vwc2-5j6h,High,<= 0.1.0,https://github.com/openclaw/openclaw/security/advisories/GHSA-mr32-vwc2-5j6h
+253,1-Click RCE via Authentication Token Exfiltration From gatewayUrl,GHSA-g8p2-7wf7-98mq,High,<=v2026.1.28,https://github.com/openclaw/openclaw/security/advisories/GHSA-g8p2-7wf7-98mq
+254,OS Command Injection via Project Root Path in sshNodeCommand,CVE-2026-25157,High,<v2026.1.29,https://github.com/openclaw/openclaw/security/advisories/GHSA-q284-4pvr-m585
+255,Slack integration hardening: prevent channel metadata from influencing system prompts,CVE-2026-24764,Low,< 2026.2.3,https://github.com/openclaw/openclaw/security/advisories/GHSA-782p-5fr5-7fj8
+256,Command Injection in Clawdbot Docker Execution via PATH Environment Variable,CVE-2026-24763,High,<= 2026.1.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-mc68-q9jw-2h3v
+257,Optional voice-call plugin: webhook verification may be bypassed behind certain proxy configurations,GHSA-3m3q-x3gj-f79x,Moderate,<= 2026.1.24,https://github.com/openclaw/openclaw/security/advisories/GHSA-3m3q-x3gj-f79x
+258,Unauthenticated Local RCE via WebSocket config.apply,CVE-2026-25593,High,< 2026.1.20,https://github.com/openclaw/openclaw/security/advisories/GHSA-g55j-c2v4-pjcg

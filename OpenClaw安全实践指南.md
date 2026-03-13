@@ -23,7 +23,7 @@ Day 0  ─── 你自主完成初始加固（平台识别 → 环境摸底 →
   │
 任务后 ─── 完成重要/复杂操作后，你主动执行针对性巡检
   │
-每日   ─── 你通过 cron 自动执行 20 项全量巡检，全量显性推送
+每日   ─── 你通过 cron 自动执行 21 项全量巡检，全量显性推送
   │
 持续   ─── 你在每次巡检末尾自动推送灾备
 ```
@@ -239,6 +239,8 @@ openclaw security audit --deep --json > $CLAW_HOME/workspace/security/native-aud
 | `malicious-domains.txt` | 恶意域名（载荷分发、数据外泄、钓鱼） | `domain\|type\|campaign\|notes` |
 | `file-hashes.txt` | 已知恶意文件 SHA-256 哈希 | `hash\|filename\|platform\|family\|notes` |
 | `malicious-publishers.txt` | 已知恶意 ClawHub / GitHub 发布者 | `username\|skill_count\|campaign\|notes` |
+| `openclaw_vulnerabilities.csv` | OpenClaw 已知漏洞数据库（版本匹配，远程同步） | CSV: `No.,Title,ID,Severity,Affected Versions,Link` |
+| `malicious-skill-names.txt` | 已确认恶意的 Skill 精确名称清单（完全匹配） | `name\|category\|notes` |
 | `malicious-skill-patterns.txt` | 恶意 Skill 命名模式（正则） | `pattern\|category\|notes` |
 
 **初始数据**（来源：Koi Security ClawHavoc 报告、VirusTotal、Snyk ToxicSkills、Bloom Security/JFrog、Hudson Rock、Antiy CERT、Oasis Security）：
@@ -308,6 +310,95 @@ lvy19811120-gif|multiple|bloom-campaign|GitHub account distributing malicious sk
 clawdhub1|~100|snyk-clawdhub|Active variant of removed clawhub typosquat, drops reverse shells
 Ddoy233|1|opensourcemalware|GitHub repo openclawcli - Windows infostealer
 hedefbari|1|clawhavoc|GitHub hosting openclaw-agent.zip
+mohibshaikh|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+moonshine-100rze|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+pierremenard|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+renixaus|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+senthazalravi|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+shay0j|multiple|openclaw-malware|Malicious skill publisher on ClawHub
+```
+
+</details>
+
+<details>
+<summary>malicious-skill-names.txt（精确名称清单）</summary>
+
+```
+agent-browser-6aigix9qi2tu|browser-lure|Browser agent variant
+agent-browser-ymepfebfpc2x|browser-lure|Browser agent variant
+agent-browser-zd1dook9mtfz|browser-lure|Browser agent variant
+auto-updater-161ks|updater-lure|Fake updater
+auto-updater-3miomc4dvir|updater-lure|Fake updater
+auto-updater-ah1|updater-lure|Fake updater
+auto-updater-ek1qviijfp1|updater-lure|Fake updater
+autoupdater|updater-lure|No-hyphen fake updater
+bird-0p|social-lure|Bird/Twitter variant
+bird-su|social-lure|Bird/Twitter variant
+blrd|social-lure|Bird typo variant
+browserautomation|browser-lure|No-hyphen browser automation
+clawbhub|typosquat|b-h transposition
+clawdhab|typosquat|Vowel swap variant
+clawdhub-0ds2em57jf|typosquat|clawdhub variant
+clawdhub-2trnbtcgyo|typosquat|clawdhub variant
+clawhub-6yr3b|typosquat|clawhub with random suffix
+clawhud|typosquat|Letter omission variant
+coding-agent-4ilvlj7rs|coding-lure|Coding assistant variant
+coding-agent-7k8p1tijc|coding-lure|Coding assistant variant
+coding-agent-pekjzav3x|coding-lure|Coding assistant variant
+codingagent|coding-lure|No-hyphen coding assistant
+deep-research-eejukdjn|research-lure|Deep research variant
+deep-research-eoo5vd95|research-lure|Deep research variant
+deep-research-kgenr3rn|research-lure|Deep research variant
+deep-research-v2h55k2w|research-lure|Deep research variant
+deepresearch|research-lure|No-hyphen deep research
+ethereum-gas-tracker-abxf0|crypto-lure|Ethereum gas tracker
+excel-1kl|office-lure|Excel tool lure
+gog-g7ksras|suspicious-lure|Suspicious random-suffix pattern
+gog-kfnluze|suspicious-lure|Suspicious random-suffix pattern
+google-workspace-2z5dp|gworkspace-lure|Google Workspace variant
+googleworkspace|gworkspace-lure|No-hyphen Google Workspace
+insider-wallets-finder-1a7pi|crypto-lure|Insider wallet finder
+linkedin-job-application|exfil-skill|Job application credential exfil
+linkedin-y5b|social-lure|LinkedIn variant
+lost-bitcoin-10li1|crypto-lure|Lost Bitcoin recovery lure
+moltbook-lm8|monitor-lure|Moltbook monitoring service
+nano-banana-pro-8ap3x7|crypto-lure|Nano cryptocurrency lure
+nano-banana-pro-fxgpbf|crypto-lure|Nano cryptocurrency lure
+nano-bananapro|crypto-lure|Nano cryptocurrency lure
+nano-pdf-9j7bj|pdf-lure|Nano PDF variant
+nano-pdf-cr79t|pdf-lure|Nano PDF variant
+nanopdf|pdf-lure|Nano PDF variant
+obfuscated-payload|malware|Obfuscated payload delivery
+openclaw-backup-dnkxm|backup-lure|Fake OpenClaw backup
+pdf-1wso5|pdf-lure|Randomly-suffixed PDF lure
+phantom-0jcvy|crypto-lure|Phantom wallet variant
+polymarket-25nwy|prediction-lure|Polymarket variant
+polymarket-assistant|prediction-lure|Polymarket assistant
+polymarket-hyperliquid-trading|prediction-lure|Polymarket trading variant
+polymarket-trading|prediction-lure|Polymarket trading
+security-check|security-lure|Security check variant
+solana-07bcb|crypto-lure|Solana chain lure
+summarlze|typosquat|Summarize i-to-l typo
+summarize-177r|generic-lure|Summarize tool lure
+summarize-nrqj|generic-lure|Summarize tool lure
+wacli-1sk|messaging-lure|WhatsApp CLI variant
+wacli-5qi|messaging-lure|WhatsApp CLI variant
+wacli-xcb|messaging-lure|WhatsApp CLI variant
+wallet-tracker-0ghsk|crypto-lure|Wallet tracker
+whatsapp|messaging-lure|Exact WhatsApp skill name
+x-trends-0heof|social-lure|X/Twitter trends
+yahoo-finance-lpm-1-0-0|finance-lure|Yahoo Finance variant
+youtube-summarize-35o20|youtube-lure|Summarizer variant
+youtube-summarize-ebw5x|youtube-lure|Summarizer variant
+youtube-thumbnail-grabber-2dp6g|youtube-lure|Thumbnail grabber variant
+youtube-thumbnail-grabber-sq374|youtube-lure|Thumbnail grabber variant
+youtube-video-downloader-5qfuw|youtube-lure|Video downloader variant
+youtube-video-downloader-fnkxw|youtube-lure|Video downloader variant
+youtube-watchar|youtube-lure|Watcher typo variant
+youtube-watcher-7|youtube-lure|Watcher variant
+youtube-watcher-a|youtube-lure|Watcher variant
+yt-watcher|youtube-lure|YouTube abbreviated variant
+zohoclaw|typosquat|Zoho+Claw mashup
 ```
 
 </details>
@@ -362,6 +453,40 @@ telegram-bot|messaging-lure|Telegram bot lures
 
 </details>
 
+#### 已知漏洞版本匹配说明
+
+`openclaw_vulnerabilities.csv` 从远程仓库同步获取，远程地址为：
+
+```
+https://github.com/knownsec/openclaw-security/blob/main/docs/openclaw_vulnerabilities.csv
+```
+
+你在每次巡检或 Day 0 部署时，先尝试从远程下载最新版本到 `$CLAW_HOME/workspace/security/ioc-blocklist/openclaw_vulnerabilities.csv`，下载失败则使用本地已有副本。下载命令示例：
+
+```bash
+curl -sSL -o "$CLAW_HOME/workspace/security/ioc-blocklist/openclaw_vulnerabilities.csv" \
+  "https://raw.githubusercontent.com/knownsec/openclaw-security/main/docs/openclaw_vulnerabilities.csv"
+```
+
+`openclaw_vulnerabilities.csv` 中的 `Affected Versions` 字段使用版本范围表达式，格式多样。你在解析时必须支持以下全部语法：
+
+| 语法 | 含义 | 示例 |
+|---|---|---|
+| `<= X` / `< X` | 小于等于/小于版本 X | `<= 2026.3.7` |
+| `>= X` / `> X` | 大于等于/大于版本 X | `>= 2026.2.13` |
+| `= X` | 精确匹配版本 X | `= 2026.3.1` |
+| `>= X, < Y` 或 `>= X < Y` | 范围：X ≤ 版本 < Y（逗号/空格均可） | `>= 2026.1.29, < 2026.2.1` |
+| `>= X <= Y` | 范围：X ≤ 版本 ≤ Y | `>= 2026.2.13 <= 2026.3.1` |
+| `<= X \|\| = Y` | OR 条件：满足任一即命中 | `<=2026.2.19-2 \|\| =2026.2.19` |
+
+**版本号解析规则**：
+- 移除 `v` 前缀（如 `v2026.1.29` → `2026.1.29`）
+- 版本号按 `.` 分割为数组，逐段数值比较
+- 补丁后缀（如 `2026.2.19-2` 中的 `-2`、`2026.1.29-beta.1` 中的 `-beta.1`）：纯数字后缀视为补丁修订号参与排序，非数字后缀（如 `beta`）排在同版本正式发布之前
+- 条件表达式中的 `||` 为 OR 逻辑，`,` 和空格分隔的多条件为 AND 逻辑
+
+**匹配流程**：获取当前 OpenClaw 版本号（`openclaw --version`），逐行与 CSV 中每条漏洞的 `Affected Versions` 比对。命中的漏洞按严重等级（Critical > High > Moderate > Low）排序输出。
+
 部署完成后：
 1. 对 `ioc-blocklist/` 目录设置权限收窄（`chmod 700` / `icacls`），防止篡改
 2. 对所有 IOC 文件生成哈希基线，追加到 `$CLAW_HOME/.config-baseline.sha256`
@@ -380,7 +505,7 @@ telegram-bot|messaging-lure|Telegram bot lures
 
 ### 1.11 巡检脚本部署
 
-你自主编写巡检脚本，覆盖第五节定义的 20 项指标：
+你自主编写巡检脚本，覆盖第五节定义的 21 项指标：
 - Linux/macOS: `$CLAW_HOME/workspace/scripts/nightly-audit.sh`
 - Windows: `$CLAW_HOME\workspace\scripts\nightly-audit.ps1`
 
@@ -397,7 +522,7 @@ telegram-bot|messaging-lure|Telegram bot lures
 
 ### 1.13 首次全量巡检
 
-你自主执行一次第五节定义的完整 20 项巡检，保存报告到本地。
+你自主执行一次第五节定义的完整 21 项巡检，保存报告到本地。
 
 ### 1.14 推送 Day 0 报告 → 等待人类确认
 
@@ -418,11 +543,11 @@ telegram-bot|messaging-lure|Telegram bot lures
  7. 哈希基线:      openclaw.json SHA256 已记录
  8. 网络暴露:      <未发现暴露点 / 发现 N 项，已标记>
  9. 远程访问:      SSH 密码登录已禁用 / authorized_keys 已审计 / <其他发现>
-10. IOC 情报库:    已部署 N 个 C2 IP, M 个恶意域名, K 个文件哈希, P 个恶意发布者, Q 个命名模式
+10. IOC 情报库:    已部署 N 个 C2 IP, M 个恶意域名, K 个文件哈希, P 个恶意发布者, R 个已知恶意 Skill 名称, Q 个命名模式
 11. AGENTS.md:     命令分级规则 + 巡检触发条件 + 配置基线 已写入
 12. 巡检脚本:      已部署, 已锁定, cron 已注册
 13. 灾备:          Git 仓库已初始化 / <或: 需人类提供远程仓库地址>
-14. 首次巡检:      20 项指标结果摘要
+14. 首次巡检:      21 项指标结果摘要
 
 待人类确认项:
 - <列出需要人类决定的事项，如: authorized_keys 中发现未知公钥，是否移除？>
@@ -460,9 +585,11 @@ telegram-bot|messaging-lure|Telegram bot lures
 
 读取 `malicious-publishers.txt`，将扩展的发布者（ClawHub 用户名或 GitHub 账号）与黑名单比对。命中时标记为 **BLOCK**，汇报中注明关联的攻击活动。
 
-#### 2.2.2 Skill 命名模式匹配
+#### 2.2.2 Skill 名称与命名模式匹配
 
-读取 `malicious-skill-patterns.txt`，将扩展的 slug / 名称逐一与正则模式比对。命中时标记为 **WARN**（命名模式命中不等于确认恶意，但应大幅提高审查力度）。以下类别命中时直接 **BLOCK**：`typosquat`、`exfil-skill`、`reverse-shell`、`malware-installer`。
+**精确名称匹配**：读取 `malicious-skill-names.txt`，将扩展的 slug / 名称与已知恶意 Skill 名称清单逐一完全匹配。命中即判定为已知恶意 Skill，标记为 **BLOCK**。
+
+**正则模式匹配**：读取 `malicious-skill-patterns.txt`，将扩展的 slug / 名称逐一与正则模式比对。命中时标记为 **WARN**（命名模式命中不等于确认恶意，但应大幅提高审查力度）。以下类别命中时直接 **BLOCK**：`typosquat`、`exfil-skill`、`reverse-shell`、`malware-installer`。
 
 #### 2.2.3 文件哈希比对
 
@@ -652,7 +779,7 @@ telegram-bot|messaging-lure|Telegram bot lures
 
 **汇报原则：全量显性化。** 每项指标无论是否正常，你都必须在推送摘要中逐一列出。严禁「无异常不汇报」——沉默制造猜疑。详细报告同步保存本地。
 
-### 5.2 覆盖指标（20 项）
+### 5.2 覆盖指标（21 项）
 
 | # | 检查项 | 方法 | 平台差异 |
 |---|---|---|---|
@@ -676,6 +803,7 @@ telegram-bot|messaging-lure|Telegram bot lures
 | 18 | 环境基线漂移 | 当前状态 vs Day 0 快照（含网络暴露复查：Tailscale Funnel、Docker 端口、mDNS 广播） | 探测命令因平台而异 |
 | 19 | 网络 IOC 检测 | 检查当前活跃网络连接是否命中 IOC 情报库中的已知恶意 C2 IP 和恶意域名（详见下方说明） | `ss`+`getent` / `lsof`+`nslookup` / `Get-NetTCPConnection`+`Resolve-DnsName` |
 | 20 | IOC 情报库时效性 | 检查 `ioc-blocklist/` 目录下所有文件的最后修改时间，超过 14 天未更新标记 `WARN`，超过 30 天标记 `CRITICAL` | 通用 |
+| 21 | 已知漏洞版本匹配 | 从远程同步 `openclaw_vulnerabilities.csv` 后，获取当前 OpenClaw 版本号（`openclaw --version`），逐条解析影响版本范围表达式并与当前版本比对；命中的漏洞按严重等级排序输出，Critical/High 命中标记 `WARN`，任何 Critical 命中标记 `CRITICAL` | 通用 |
 
 #### 第 19 项：网络 IOC 检测详细方法
 
@@ -706,7 +834,7 @@ telegram-bot|messaging-lure|Telegram bot lures
 - 记录进程启动时间、命令行参数、父进程
 - 如果进程属于已安装扩展，同时标记该扩展为可疑，触发扩展完整性复查（第 15 项）
 
-> 灾备同步在 20 项巡检完成后自动执行 `git commit + push`；推送失败记 warn，不阻塞前 20 项。
+> 灾备同步在 21 项巡检完成后自动执行 `git commit + push`；推送失败记 warn，不阻塞前 21 项。
 
 ### 5.3 注册
 
@@ -768,6 +896,7 @@ OpenClaw 安全巡检日报 (YYYY-MM-DD)
 18. 环境漂移:      PASS - 监听端口/服务/防火墙/网络暴露与基线一致
 19. 网络 IOC:      PASS - 活跃连接未命中已知 C2 IP 或恶意域名 (检查 N 条连接)
 20. IOC 时效:      PASS - 情报库最近更新于 YYYY-MM-DD (N 天前)
+21. 漏洞检查:      PASS - 当前版本 X.Y.Z 未命中已知漏洞 (检查 N 个 CVE/GHSA)
 
 灾备同步: PASS - 已推送至私有仓库
 
@@ -862,7 +991,7 @@ OpenClaw 安全巡检日报 (YYYY-MM-DD)
 - [ ] 部署 IOC 威胁情报库到 `$CLAW_HOME/workspace/security/ioc-blocklist/`（含 C2 IP、恶意域名、文件哈希、恶意发布者、命名模式）
 - [ ] 锁定 IOC 情报文件并生成哈希基线
 - [ ] 将命令分级规则 + 巡检触发条件 + 配置基线期望值写入 `AGENTS.md`
-- [ ] 编写巡检脚本，覆盖 20 项指标
+- [ ] 编写巡检脚本，覆盖 21 项指标
 - [ ] 注册 cron 定时任务
 - [ ] 锁定巡检脚本
 - [ ] 初始化灾备 Git 仓库（如需人类提供远程地址，记录到报告）
@@ -875,5 +1004,6 @@ OpenClaw 安全巡检日报 (YYYY-MM-DD)
 - [ ] 触发条件满足时自动执行任务后巡检（含网络 IOC 快速比对）
 - [ ] 每周检查 IOC 情报源更新，保持情报库时效性（超 14 天未更新 WARN，超 30 天 CRITICAL）
 - [ ] 每月提醒人类（或自主）执行灾备恢复演练
+- [ ] 每次版本升级或漏洞库更新后，执行已知漏洞版本匹配检查
 - [ ] 持续关注并更新威胁检测规则库
 - [ ] 定期评估所用 LLM 模型对注入攻击的抵抗力，必要时调整告警阈值

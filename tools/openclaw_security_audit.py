@@ -3,20 +3,37 @@
 import os
 import sys
 import json
+import csv
+import re
 import hashlib
 import subprocess
 import datetime
 import locale
+import platform
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional
+
+IS_WINDOWS = sys.platform == 'win32'
+IS_MACOS = sys.platform == 'darwin'
+IS_LINUX = sys.platform.startswith('linux')
 
 OC_STATE_DIR = Path(os.environ.get(
     'OPENCLAW_STATE_DIR',
     Path.home() / '.openclaw'
 ))
-REPORT_DIR = Path('/tmp/openclaw-security-reports')
+
+# Platform-specific report directory
+if IS_WINDOWS:
+    REPORT_DIR = Path(os.environ.get('TEMP', '/tmp')) / 'openclaw-security-reports'
+else:
+    REPORT_DIR = Path('/tmp/openclaw-security-reports')
+
 DATE_STR = datetime.date.today().isoformat()
 REPORT_FILE = REPORT_DIR / f'report-{DATE_STR}.txt'
+
+# ANSI color codes
+RED = '\033[91m'
+RESET = '\033[0m'
 
 
 def is_chinese_locale() -> bool:
@@ -158,6 +175,14 @@ I18N = {
         'new_addition': '新增: {}',
         'modified': '变更: {}',
         'disk_unknown': '未知',
+        'vuln_check_header': '已知漏洞版本匹配',
+        'vuln_csv_not_found': '漏洞数据库文件未找到: {}',
+        'vuln_version_unknown': '漏洞检查: 无法获取当前 OpenClaw 版本号',
+        'vuln_none_matched': '漏洞检查: 当前版本 {} 未命中已知漏洞 (检查 {} 个 CVE/GHSA)',
+        'vuln_matched': '漏洞检查: 当前版本 {} 命中 {} 个已知漏洞 ({} Critical, {} High, {} Moderate, {} Low)',
+        'vuln_detail': '  [{severity}] {id} - {title}',
+        'vuln_affected': '    影响版本: {affected}',
+        'vuln_link': '    详情: {link}',
     },
     'en': {
         'audit_result_class_doc': 'Audit result class',
@@ -276,14 +301,25 @@ I18N = {
         'new_addition': 'New: {}',
         'modified': 'Modified: {}',
         'disk_unknown': 'Unknown',
+        'vuln_check_header': 'Known Vulnerability Version Matching',
+        'vuln_csv_not_found': 'Vulnerability database file not found: {}',
+        'vuln_version_unknown': 'Vuln Check: Unable to determine current OpenClaw version',
+        'vuln_none_matched': 'Vuln Check: Current version {} not affected by known vulnerabilities (checked {} CVE/GHSA)',
+        'vuln_matched': 'Vuln Check: Current version {} matches {} known vulnerabilities ({} Critical, {} High, {} Moderate, {} Low)',
+        'vuln_detail': '  [{severity}] {id} - {title}',
+        'vuln_affected': '    Affected versions: {affected}',
+        'vuln_link': '    Details: {link}',
     }
 }
 
 
-def t(key: str, *args) -> str:
+def t(key: str, *args, **kwargs) -> str:
     """Translation helper function"""
     lang = 'zh' if USE_ZH else 'en'
-    return I18N[lang].get(key, key).format(*args) if args else I18N[lang].get(key, key)
+    template = I18N[lang].get(key, key)
+    if kwargs:
+        return template.format(**kwargs)
+    return template.format(*args) if args else template
 
 
 class AuditResult:
@@ -295,7 +331,7 @@ class AuditResult:
         self.summary_lines.append(f"[{t('ok')}] {message}")
 
     def add_warning(self, message: str):
-        warn_msg = f"[{t('warning')}] {message}"
+        warn_msg = f"{RED}[{t('warning')}] {message}{RESET}"
         self.warnings.append(warn_msg)
         self.summary_lines.append(warn_msg)
 
@@ -304,7 +340,7 @@ class AuditResult:
         lines.extend(self.summary_lines)
         if self.warnings:
             lines.append("")
-            lines.append(t('warning_items'))
+            lines.append(f"{RED}{t('warning_items')}{RESET}")
             lines.extend(self.warnings)
         return "\n".join(lines)
 
@@ -312,14 +348,18 @@ class AuditResult:
 def run_command(
     cmd: List[str],
     capture: bool = True,
-    check: bool = False
+    check: bool = False,
+    shell: bool = False
 ) -> Tuple[int, str, str]:
     try:
+        # Windows requires shell=True for some commands like PowerShell
+        use_shell = shell or (IS_WINDOWS and len(cmd) > 0 and cmd[0].lower().endswith('powershell.exe'))
         result = subprocess.run(
             cmd,
             capture_output=capture,
             text=True,
-            check=check
+            check=check,
+            shell=use_shell
         )
         return result.returncode, result.stdout, result.stderr
     except subprocess.CalledProcessError as e:
@@ -362,6 +402,91 @@ def audit_isolation(result: AuditResult) -> None:
     """Check runtime environment isolation"""
     append_report(f"\n{t('isolation_check_header')}")
 
+    if IS_WINDOWS:
+        isolation_info = []
+        is_isolated = False
+
+        # Check for WSL
+        code, output, _ = run_command(['wsl.exe', '--list', '--quiet'], check=False)
+        if code == 0 and output.strip():
+            isolation_info.append("Detected WSL (Windows Subsystem for Linux)")
+            is_isolated = True
+
+        # Check for Hyper-V
+        code, output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-ComputerInfo | Select-Object -ExpandProperty HyperVisorPresent'
+        ], check=False)
+        if 'True' in output:
+            isolation_info.append("Detected Hyper-V")
+            is_isolated = True
+
+        # Check for Virtual Machine via wmic
+        code, output, _ = run_command([
+            'wmic', 'computersystem', 'get', 'model'
+        ], check=False)
+        if output and 'virtual' in output.lower():
+            if 'Detected VM environment' not in str(isolation_info):
+                isolation_info.append(f"Detected VM environment ({output.strip()})")
+                is_isolated = True
+
+        # Check for Docker Desktop
+        code, output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-Service -Name Docker -ErrorAction SilentlyContinue'
+        ], check=False)
+        if code == 0 and output:
+            isolation_info.append(t('detected_docker'))
+            is_isolated = True
+
+        if isolation_info:
+            append_report(" | ".join(isolation_info))
+            result.add_success(t('env_isolated'))
+        else:
+            append_report(t('no_vm_detected'))
+            result.add_warning(t('env_not_isolated'))
+        return
+
+    if IS_MACOS:
+        isolation_info = []
+        is_isolated = False
+
+        # Check for Docker
+        docker_path = Path('/.dockerenv')
+        if docker_path.exists():
+            isolation_info.append(t('detected_docker'))
+            is_isolated = True
+
+        # Check hardware model for VM detection
+        code, hw_model, _ = run_command([
+            'sysctl', '-n', 'hw.model'
+        ], check=False)
+        if hw_model:
+            vm_keywords = ['vmware', 'virtualbox', 'parallels', 'qemu']
+            for keyword in vm_keywords:
+                if keyword in hw_model.lower():
+                    isolation_info.append(f"Detected VM environment ({hw_model.strip()})")
+                    is_isolated = True
+                    break
+
+        # Check CPU brand string
+        code, cpu_brand, _ = run_command([
+            'sysctl', '-n', 'machdep.cpu.brand_string'
+        ], check=False)
+        if cpu_brand and 'qemu' in cpu_brand.lower():
+            if 'Detected VM' not in str(isolation_info):
+                isolation_info.append(f"Detected VM (QEMU)")
+                is_isolated = True
+
+        if isolation_info:
+            append_report(" | ".join(isolation_info))
+            result.add_success(t('env_isolated'))
+        else:
+            append_report(t('no_vm_detected'))
+            result.add_warning(t('env_not_isolated'))
+        return
+
+    # Linux detection logic
     isolation_info = []
     is_isolated = False
 
@@ -402,35 +527,112 @@ def audit_isolation(result: AuditResult) -> None:
 def audit_root_privilege(result: AuditResult) -> None:
     append_report(f"\n{t('privilege_check_header')}")
 
-    is_root = os.geteuid() == 0
+    if IS_WINDOWS:
+        # Check if openclaw-gateway process is running as Administrator
+        code, pid_output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-Process openclaw-gateway -ErrorAction SilentlyContinue | ' +
+            'Select-Object -ExpandProperty Id'
+        ], check=False)
 
-    if is_root:
-        append_report(t('running_as_root'))
-        result.add_warning(t('root_warning'))
+        if pid_output and pid_output.strip().isdigit():
+            gw_pid = pid_output.strip()
+            code, user_output, _ = run_command([
+                'powershell.exe', '-Command',
+                f'(Get-Process -Id {gw_pid} -ErrorAction SilentlyContinue).UserName'
+            ], check=False)
+
+            if user_output and 'administrator' in user_output.lower():
+                append_report(f"OpenClaw Gateway running as: {user_output.strip()}")
+                result.add_warning(t('root_warning'))
+            else:
+                append_report(f"OpenClaw Gateway running as: {user_output.strip() or 'normal user'}")
+                result.add_success(t('privilege_ok'))
+        else:
+            append_report("OpenClaw Gateway process not found")
+            result.add_success("OpenClaw Gateway 未运行")
+        return
+
+    # Linux: Check openclaw-gateway process user
+    _, pgrep_output, _ = run_command([
+        'pgrep', '-f', 'openclaw-gateway'
+    ], check=False)
+
+    if pgrep_output and pgrep_output.strip().isdigit():
+        gw_pid = pgrep_output.strip()
+        _, user_output, _ = run_command([
+            'ps', '-o', 'user=', '-p', gw_pid
+        ], check=False)
+
+        if user_output:
+            user = user_output.strip()
+            if user == 'root':
+                append_report(f"OpenClaw Gateway running as: {user}")
+                result.add_warning(t('root_warning'))
+            else:
+                append_report(f"OpenClaw Gateway running as: {user}")
+                result.add_success(t('privilege_ok'))
+        else:
+            append_report(t('running_as_user'))
+            result.add_success(t('privilege_ok'))
     else:
-        append_report(t('running_as_user'))
-        result.add_success(t('privilege_ok'))
+        append_report("OpenClaw Gateway process not found")
+        result.add_success("OpenClaw Gateway 未运行")
 
 
 def audit_gateway_exposure(result: AuditResult) -> None:
     append_report(f"\n{t('gateway_exposure_header')}")
 
-    _, ss_output, _ = run_command([
-        'ss', '-tunlp'
-    ], check=False)
-
     exposed = False
     binding_info = []
 
-    if ss_output:
-        for line in ss_output.split('\n'):
-            if '18789' in line:
-                append_report(t('listening_record', line.strip()))
-                if '0.0.0.0:18789' in line or '[::]:18789' in line:
-                    exposed = True
-                    binding_info.append(t('listening_all'))
-                elif '127.0.0.1:18789' in line or '[::1]:18789' in line:
-                    binding_info.append(t('listening_local'))
+    if IS_WINDOWS:
+        # Use PowerShell to get listening ports on Windows
+        code, output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-NetTCPConnection -LocalPort 18789 -State Listen -ErrorAction SilentlyContinue | ' +
+            'Select-Object LocalAddress,OwningProcess | Format-Table -HideTableHeaders'
+        ], check=False)
+
+        if output and output.strip():
+            for line in output.strip().split('\n'):
+                if line.strip() and '18789' not in line:  # Header line
+                    append_report(t('listening_record', line.strip()))
+                    if '0.0.0.0' in line or '[::]' in line:
+                        exposed = True
+                        binding_info.append(t('listening_all'))
+                    elif '127.0.0.1' in line or '[::1]' in line:
+                        binding_info.append(t('listening_local'))
+    elif IS_MACOS:
+        # macOS: use lsof command
+        _, lsof_output, _ = run_command([
+            'lsof', '-i', ':18789', '-P', '-n'
+        ], check=False)
+
+        if lsof_output:
+            for line in lsof_output.split('\n'):
+                if 'LISTEN' in line and 'TCP' in line:
+                    append_report(t('listening_record', line.strip()))
+                    if '*:18789' in line or '0.0.0.0:18789' in line:
+                        exposed = True
+                        binding_info.append(t('listening_all'))
+                    elif '127.0.0.1:18789' in line or '[::1]:18789' in line or 'localhost:18789' in line:
+                        binding_info.append(t('listening_local'))
+    else:
+        # Linux: use ss command
+        _, ss_output, _ = run_command([
+            'ss', '-tunlp'
+        ], check=False)
+
+        if ss_output:
+            for line in ss_output.split('\n'):
+                if '18789' in line:
+                    append_report(t('listening_record', line.strip()))
+                    if '0.0.0.0:18789' in line or '[::]:18789' in line:
+                        exposed = True
+                        binding_info.append(t('listening_all'))
+                    elif '127.0.0.1:18789' in line or '[::1]:18789' in line:
+                        binding_info.append(t('listening_local'))
 
     if binding_info:
         append_report(" | ".join(binding_info))
@@ -483,6 +685,220 @@ def audit_skill_trust(result: AuditResult) -> None:
         result.add_success(t('skills_count', skill_count))
 
 
+def parse_version(ver_str: str) -> Tuple:
+    """Parse a version string into a comparable tuple.
+
+    Handles formats like: 2026.3.7, 2026.2.19-2, 2026.1.29-beta.1, v2026.1.29, 2.0.0-beta3
+    Returns a tuple of (major, minor, patch, suffix_sort_key, suffix_value) for comparison.
+    Non-numeric suffixes (beta/alpha/rc) sort before the same version's stable release.
+    """
+    ver_str = ver_str.strip().lstrip('v')
+    suffix = None
+    if '-' in ver_str:
+        base, suffix = ver_str.split('-', 1)
+    else:
+        base = ver_str
+
+    parts = []
+    for p in base.split('.'):
+        try:
+            parts.append(int(p))
+        except ValueError:
+            parts.append(0)
+    while len(parts) < 3:
+        parts.append(0)
+
+    if suffix is None:
+        return tuple(parts) + (1, 0)
+    try:
+        return tuple(parts) + (1, int(suffix))
+    except ValueError:
+        # beta, alpha, rc etc. sort before stable (suffix_sort_key=0)
+        m = re.search(r'(\d+)', suffix)
+        suffix_num = int(m.group(1)) if m else 0
+        return tuple(parts) + (0, suffix_num)
+
+
+def check_version_condition(current: Tuple, condition: str) -> bool:
+    """Check if current version satisfies a single condition like '<= 2026.3.7'."""
+    condition = condition.strip()
+    if not condition:
+        return False
+
+    ops = [('<=', lambda a, b: a <= b),
+           ('>=', lambda a, b: a >= b),
+           ('<',  lambda a, b: a < b),
+           ('>',  lambda a, b: a > b),
+           ('=',  lambda a, b: a == b)]
+
+    for op_str, op_fn in ops:
+        if condition.startswith(op_str):
+            ver = condition[len(op_str):].strip()
+            if ver:
+                return op_fn(current, parse_version(ver))
+    return False
+
+
+def version_matches_range(current_ver: str, affected_str: str) -> bool:
+    """Check if current_ver falls within the affected version range expression.
+
+    Supports: <= X, < X, >= X, > X, = X, ranges (>= X, < Y), OR (||).
+    """
+    affected_str = affected_str.strip().strip('"').strip("'")
+    if not affected_str:
+        return False
+
+    current = parse_version(current_ver)
+
+    or_groups = [g.strip() for g in affected_str.split('||')]
+    for group in or_groups:
+        group = group.strip()
+        conditions = re.split(r',\s*', group)
+
+        expanded = []
+        for cond in conditions:
+            cond = cond.strip()
+            tokens = re.findall(r'([<>=]+)\s*([^\s<>=,]+)', cond)
+            for op, ver in tokens:
+                expanded.append(f"{op} {ver}")
+
+        if not expanded:
+            continue
+
+        if all(check_version_condition(current, c) for c in expanded):
+            return True
+
+    return False
+
+
+def load_vulnerabilities(csv_path: Path) -> List[Dict]:
+    """Load vulnerabilities from the CSV file."""
+    vulns = []
+    if not csv_path.exists():
+        return vulns
+    with open(csv_path, 'r', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            vulns.append({
+                'no': row.get('No.', ''),
+                'title': row.get('Vulnerability Title', ''),
+                'id': row.get('Vulnerability ID', ''),
+                'severity': row.get('Severity', ''),
+                'affected': row.get('Affected Versions', ''),
+                'link': row.get('Vulnerability Link', ''),
+            })
+    return vulns
+
+
+SEVERITY_ORDER = {'Critical': 0, 'High': 1, 'Moderate': 2, 'Low': 3}
+
+
+VULN_CSV_REMOTE_URL = (
+    "https://raw.githubusercontent.com/knownsec/openclaw-security/main/docs/openclaw_vulnerabilities.csv"
+)
+
+
+def fetch_vulnerability_csv(target_path: Path) -> bool:
+    """Download the latest vulnerability CSV from remote repository."""
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        import urllib.request
+        import urllib.error
+        req = urllib.request.Request(VULN_CSV_REMOTE_URL, headers={
+            'User-Agent': 'OpenClaw-Security-Audit/1.0'
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = resp.read()
+        with open(target_path, 'wb') as f:
+            f.write(data)
+        return True
+    except Exception:
+        return False
+
+
+def audit_vulnerability_check(result: AuditResult, current_ver: Optional[str]) -> None:
+    """Check current OpenClaw version against known vulnerabilities."""
+    append_report(f"\n{t('vuln_check_header')}")
+
+    csv_candidates = [
+        OC_STATE_DIR / 'workspace' / 'security' / 'ioc-blocklist' / 'openclaw_vulnerabilities.csv',
+        Path(__file__).parent.parent / 'docs' / 'openclaw_vulnerabilities.csv',
+        Path(__file__).parent / 'openclaw_vulnerabilities.csv',
+    ]
+
+    csv_path = None
+    for candidate in csv_candidates:
+        if candidate.exists():
+            csv_path = candidate
+            break
+
+    if csv_path is None:
+        target = csv_candidates[0]
+        if fetch_vulnerability_csv(target):
+            csv_path = target
+            append_report(f"Local not found, remote fetch: OK ({VULN_CSV_REMOTE_URL})")
+        else:
+            append_report(t('vuln_csv_not_found', ', '.join(str(p) for p in csv_candidates)))
+            result.add_warning(t('vuln_version_unknown'))
+            return
+    else:
+        append_report(f"Loaded: {csv_path}")
+
+    if not current_ver:
+        result.add_warning(t('vuln_version_unknown'))
+        return
+
+    ver_clean = current_ver.strip().lower()
+    for prefix in ['openclaw gateway ', 'openclaw ', 'v']:
+        if ver_clean.startswith(prefix):
+            ver_clean = ver_clean[len(prefix):]
+    # Remove git commit hash in parentheses, e.g. "2026.3.8 (3caab92)" -> "2026.3.8"
+    ver_clean = re.sub(r'\s*\([^)]*\)\s*$', '', ver_clean).strip()
+
+    vulns = load_vulnerabilities(csv_path)
+    matched = []
+
+    for vuln in vulns:
+        affected = vuln.get('affected', '')
+        if affected and version_matches_range(ver_clean, affected):
+            matched.append(vuln)
+
+    matched.sort(key=lambda v: SEVERITY_ORDER.get(v.get('severity', ''), 99))
+
+    total = len(vulns)
+    if not matched:
+        append_report(f"\nVersion: {ver_clean}, Checked: {total} vulnerabilities, Matched: 0\n")
+        result.add_success(t('vuln_none_matched', ver_clean, total))
+    else:
+        counts = {}
+        for v in matched:
+            s = v.get('severity', 'Unknown')
+            counts[s] = counts.get(s, 0) + 1
+
+        crit = counts.get('Critical', 0)
+        high = counts.get('High', 0)
+        mod = counts.get('Moderate', 0)
+        low = counts.get('Low', 0)
+
+        append_report(f"\nVersion: {ver_clean}, Checked: {total}, Matched: {len(matched)}\n")
+        for v in matched[:30]:
+            append_report(t('vuln_detail', severity=v['severity'], id=v['id'], title=v['title']) + '\n')
+            append_report(t('vuln_affected', affected=v['affected']) + '\n')
+            append_report(t('vuln_link', link=v['link']) + '\n')
+            append_report('\n')
+
+        if len(matched) > 30:
+            append_report(f"  ... and {len(matched) - 30} more\n")
+
+        summary = t('vuln_matched', ver_clean, len(matched), crit, high, mod, low)
+        if crit > 0:
+            result.add_warning(f"[CRITICAL] {summary}")
+        elif high > 0:
+            result.add_warning(summary)
+        else:
+            result.add_warning(summary)
+
+
 def check_openclaw_version() -> Tuple[Optional[str], Optional[str]]:
     current_ver = None
     latest_ver = None
@@ -510,14 +926,43 @@ def check_openclaw_version() -> Tuple[Optional[str], Optional[str]]:
 def audit_process_network(result: AuditResult) -> None:
     append_report(f"\n{t('process_network_header')}")
 
-    _, ss_output, _ = run_command(['ss', '-tunlp'], check=False)
-    append_report(ss_output or t('ss_failed'))
+    if IS_WINDOWS:
+        # Use netstat on Windows
+        _, netstat_output, _ = run_command([
+            'netstat', '-ano'
+        ], check=False)
+        append_report(netstat_output or "netstat command failed")
 
-    _, top_output, _ = run_command([
-        'top', '-b', '-n', '1'
-    ], check=False)
-    if top_output:
-        append_report("\n".join(top_output.split('\n')[:15]))
+        # Get top processes by CPU
+        _, ps_output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-Process | Sort-Object CPU -Descending | Select-Object -First 15 | Format-Table -AutoSize'
+        ], check=False)
+        if ps_output:
+            append_report("\n" + ps_output)
+    elif IS_MACOS:
+        # macOS: use netstat and top
+        _, netstat_output, _ = run_command([
+            'netstat', '-an'
+        ], check=False)
+        append_report(netstat_output or "netstat command failed")
+
+        # Get top processes (macOS uses -l 1 instead of -b -n 1)
+        _, top_output, _ = run_command([
+            'top', '-l', '1', '-o', 'cpu', '-n', '15'
+        ], check=False)
+        if top_output:
+            append_report("\n" + top_output)
+    else:
+        # Linux commands
+        _, ss_output, _ = run_command(['ss', '-tunlp'], check=False)
+        append_report(ss_output or t('ss_failed'))
+
+        _, top_output, _ = run_command([
+            'top', '-b', '-n', '1'
+        ], check=False)
+        if top_output:
+            append_report("\n".join(top_output.split('\n')[:15]))
 
     result.add_success(t('process_network_ok'))
 
@@ -525,24 +970,44 @@ def audit_process_network(result: AuditResult) -> None:
 def audit_sensitive_dirs(result: AuditResult) -> None:
     append_report(f"\n{t('sensitive_dirs_header')}")
 
-    dirs_to_check = [
-        OC_STATE_DIR,
-        Path('/etc'),
-        Path.home() / '.ssh',
-        Path.home() / '.gnupg',
-        Path('/usr/local/bin')
-    ]
-
     mod_count = 0
-    for dir_path in dirs_to_check:
-        if dir_path.exists():
-            _, output, _ = run_command([
-                'find', str(dir_path),
-                '-type', 'f',
-                '-mtime', '-1'
-            ], check=False)
-            if output:
-                mod_count += len(output.strip().split('\n'))
+
+    if IS_WINDOWS:
+        # Windows: Check user directories
+        dirs_to_check = [
+            OC_STATE_DIR,
+            Path.home() / '.ssh',
+        ]
+
+        for dir_path in dirs_to_check:
+            if dir_path.exists():
+                code, output, _ = run_command([
+                    'powershell.exe', '-Command',
+                    f'Get-ChildItem -Path "{dir_path}" -Recurse -File -ErrorAction SilentlyContinue | ' +
+                    'Where-Object {$_.LastWriteTime -gt (Get-Date).AddDays(-1)} | ' +
+                    'Select-Object -ExpandProperty FullName'
+                ], check=False)
+                if output and output.strip():
+                    mod_count += len(output.strip().split('\n'))
+    else:
+        # Linux: Check all directories including system paths
+        dirs_to_check = [
+            OC_STATE_DIR,
+            Path('/etc'),
+            Path.home() / '.ssh',
+            Path.home() / '.gnupg',
+            Path('/usr/local/bin')
+        ]
+
+        for dir_path in dirs_to_check:
+            if dir_path.exists():
+                _, output, _ = run_command([
+                    'find', str(dir_path),
+                    '-type', 'f',
+                    '-mtime', '-1'
+                ], check=False)
+                if output:
+                    mod_count += len(output.strip().split('\n'))
 
     append_report(t('total_modified_files', mod_count))
     result.add_success(t('dir_changes', mod_count))
@@ -551,6 +1016,34 @@ def audit_sensitive_dirs(result: AuditResult) -> None:
 def audit_system_cron(result: AuditResult) -> None:
     append_report(f"\n{t('system_cron_header')}")
 
+    if IS_WINDOWS:
+        # Windows Task Scheduler
+        code, output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-ScheduledTask | Where-Object {$_.State -eq "Ready"} | ' +
+            'Select-Object TaskName,Trigger | Format-Table -AutoSize'
+        ], check=False)
+        append_report(output or "No scheduled tasks found or access denied")
+        result.add_success("Windows Task Scheduler: Collected scheduled task info")
+        return
+
+    if IS_MACOS:
+        # macOS: use launchctl list
+        code, output, _ = run_command([
+            'launchctl', 'list'
+        ], check=False)
+        append_report(output or "launchctl command failed")
+
+        # Check user launch agents
+        user_agents = Path.home() / 'Library' / 'LaunchAgents'
+        if user_agents.exists():
+            _, output, _ = run_command(['ls', '-la', str(user_agents)], check=False)
+            append_report("\nUser LaunchAgents:\n" + (output or ""))
+
+        result.add_success("macOS launchd: Collected scheduled task info")
+        return
+
+    # Linux cron and systemd timers
     cron_dirs = ['/etc/cron.*', '/var/spool/cron/crontabs/']
     for cron_dir in cron_dirs:
         _, output, _ = run_command(['ls', '-la', cron_dir], check=False)
@@ -587,6 +1080,45 @@ def audit_openclaw_cron(result: AuditResult) -> None:
 def audit_ssh(result: AuditResult) -> None:
     append_report(f"\n{t('ssh_header')}")
 
+    if IS_WINDOWS:
+        # Windows: Check Event Log for failed login attempts
+        code, output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-WinEvent -LogName Security -MaxEvents 100 -ErrorAction SilentlyContinue | ' +
+            'Where-Object {$_.Id -eq 4625} | ' +
+            'Select-Object TimeCreated,Message | Format-Table -AutoSize'
+        ], check=False)
+
+        failed_ssh = 0
+        if output:
+            failed_ssh = output.strip().count('\n') if output.strip() else 0
+
+        append_report(f"Windows failed login attempts (Event ID 4625): {failed_ssh}")
+        result.add_success(t('ssh_security_ok', failed_ssh))
+        return
+
+    if IS_MACOS:
+        # macOS: Show login records
+        _, last_output, _ = run_command(['last', '-n', '5'], check=False)
+        append_report(last_output or "last command failed")
+
+        # Check SSH logs using log show
+        code, output, _ = run_command([
+            'log', 'show', '--predicate', 'process == "sshd"',
+            '--last', '24h'
+        ], check=False)
+
+        failed_ssh = 0
+        if output:
+            failed_count = output.lower().count('failed')
+            failed_count += output.lower().count('invalid')
+            failed_ssh = failed_count
+
+        append_report(f"macOS SSH failed attempts (last 24h): {failed_ssh}")
+        result.add_success(t('ssh_security_ok', failed_ssh))
+        return
+
+    # Linux SSH audit
     _, last_output, _ = run_command(['last', '-a', '-n', '5'], check=False)
     append_report(last_output or t('last_failed'))
 
@@ -666,9 +1198,18 @@ def audit_file_integrity(result: AuditResult) -> None:
     files_to_check = [
         ('openclaw', OC_STATE_DIR / 'openclaw.json'),
         ('paired', OC_STATE_DIR / 'devices' / 'paired.json'),
-        ('sshd_config', Path('/etc/ssh/sshd_config')),
-        ('authorized_keys', Path.home() / '.ssh' / 'authorized_keys')
     ]
+
+    # Linux-specific files
+    if not IS_WINDOWS:
+        files_to_check.extend([
+            ('sshd_config', Path('/etc/ssh/sshd_config')),
+        ])
+
+    # Common files
+    files_to_check.append(
+        ('authorized_keys', Path.home() / '.ssh' / 'authorized_keys')
+    )
 
     for name, file_path in files_to_check:
         if file_path.exists():
@@ -690,6 +1231,54 @@ def audit_file_integrity(result: AuditResult) -> None:
 def audit_yellow_line(result: AuditResult) -> None:
     append_report(f"\n{t('yellow_line_header')}")
 
+    if IS_WINDOWS:
+        # Windows: Yellow line audit not applicable in the same way
+        # Check PowerShell history instead
+        ps_history = Path.home() / 'AppData' / 'Roaming' / 'Microsoft' / 'Windows' / 'PowerShell' / 'PSReadLine' / 'ConsoleHost_history.txt'
+        sudo_count = 0
+        if ps_history.exists():
+            try:
+                with open(ps_history, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                    # Count admin-related commands
+                    sudo_count = content.lower().count('admin') + content.lower().count('sudo')
+            except Exception:
+                pass
+
+        memory_file = OC_STATE_DIR / 'workspace' / 'memory' / f'{DATE_STR}.md'
+        mem_count = 0
+        if memory_file.exists():
+            with open(memory_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                mem_count = content.lower().count('sudo') + content.lower().count('admin')
+
+        append_report(f"PowerShell history commands: {sudo_count}, Memory logs: {mem_count}")
+        result.add_success(t('yellow_line_ok', sudo_count, mem_count))
+        return
+
+    if IS_MACOS:
+        # macOS: Use log show to check sudo usage
+        code, output, _ = run_command([
+            'log', 'show', '--predicate', 'process == "sudo"',
+            '--last', '24h'
+        ], check=False)
+
+        sudo_count = 0
+        if output:
+            sudo_count = len([line for line in output.split('\n') if line.strip()])
+
+        memory_file = OC_STATE_DIR / 'workspace' / 'memory' / f'{DATE_STR}.md'
+        mem_count = 0
+        if memory_file.exists():
+            with open(memory_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                mem_count = content.lower().count('sudo')
+
+        append_report(f"macOS sudo log entries: {sudo_count}, Memory logs: {mem_count}")
+        result.add_success(t('yellow_line_ok', sudo_count, mem_count))
+        return
+
+    # Linux yellow line audit
     sudo_count = 0
     log_files = ['/var/log/auth.log', '/var/log/secure', '/var/log/messages']
 
@@ -717,6 +1306,38 @@ def audit_yellow_line(result: AuditResult) -> None:
 def audit_disk_usage(result: AuditResult) -> None:
     append_report(f"\n{t('disk_usage_header')}")
 
+    if IS_WINDOWS:
+        # Windows disk usage
+        code, output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-PSDrive -PSProvider FileSystem | ' +
+            'Select-Object Name,Used,Free,@{Name="Used%";Expression={[math]::Round($_.Used/($_.Used+$_.Free)*100,2)}} | ' +
+            'Format-Table -AutoSize'
+        ], check=False)
+
+        disk_usage = t('disk_unknown')
+        if output:
+            for line in output.split('\n'):
+                if 'C:' in line or '%' in line:
+                    append_report(line.strip())
+
+        # Find large files on C: drive
+        code, find_output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-ChildItem -Path C:\\ -Recurse -File -ErrorAction SilentlyContinue | ' +
+            'Where-Object {$_.Length -gt 100MB -and $_.LastWriteTime -gt (Get-Date).AddDays(-1)} | ' +
+            'Select-Object -First 20 -ExpandProperty FullName'
+        ], check=False)
+
+        large_files = 0
+        if find_output and find_output.strip():
+            large_files = len(find_output.strip().split('\n'))
+
+        append_report(t('disk_usage', disk_usage, large_files))
+        result.add_success(t('disk_capacity', disk_usage, large_files))
+        return
+
+    # macOS and Linux use similar commands
     _, df_output, _ = run_command(['df', '-h', '/'], check=False)
     disk_usage = t('disk_unknown')
     if df_output:
@@ -743,6 +1364,74 @@ def audit_disk_usage(result: AuditResult) -> None:
 def audit_env_variables(result: AuditResult) -> None:
     append_report(f"\n{t('env_variables_header')}")
 
+    if IS_WINDOWS:
+        # Windows: Get process ID and check environment
+        code, pgrep_output, _ = run_command([
+            'powershell.exe', '-Command',
+            'Get-Process openclaw-gateway -ErrorAction SilentlyContinue | ' +
+            'Select-Object -ExpandProperty Id'
+        ], check=False)
+
+        gw_pid = None
+        if pgrep_output and pgrep_output.strip().isdigit():
+            gw_pid = pgrep_output.strip()
+
+        if gw_pid:
+            # Windows doesn't allow direct reading of process environment
+            # Use a different approach: check if process has certain environment variables
+            code, output, _ = run_command([
+                'powershell.exe', '-Command',
+                f'(Get-Process -Id {gw_pid} -ErrorAction SilentlyContinue).StartInfo.EnvironmentVariables'
+            ], check=False)
+
+            # Since we can't easily read env vars on Windows, just log the attempt
+            append_report("Environment variable scan: Cannot directly read process environment on Windows (OS limitation)")
+            result.add_success(t('env_scan_ok'))
+        else:
+            result.add_warning(t('env_no_process'))
+        return
+
+    if IS_MACOS:
+        # macOS: Use ps to get environment variables
+        _, pgrep_output, _ = run_command([
+            'pgrep', '-f', 'openclaw-gateway'
+        ], check=False)
+
+        gw_pid = None
+        if pgrep_output and pgrep_output.strip().isdigit():
+            gw_pid = pgrep_output.strip()
+
+        if gw_pid:
+            # macOS uses ps -E to show environment
+            code, output, _ = run_command([
+                'ps', '-E', '-p', gw_pid
+            ], check=False)
+
+            if output:
+                env_data = output
+                sensitive_found = []
+                for line in env_data.split('\n'):
+                    line = line.strip()
+                    if line and '=' in line:
+                        for keyword in ['SECRET', 'TOKEN', 'PASSWORD', 'KEY']:
+                            if keyword in line.upper():
+                                var_name = line.split('=')[0]
+                                sensitive_found.append(t('env_var_hidden', var_name))
+                                break
+
+                if sensitive_found:
+                    append_report(t('sensitive_vars_found') + ", ".join(sensitive_found[:5]))
+                else:
+                    append_report(t('no_sensitive_vars'))
+
+                result.add_success(t('env_scan_ok'))
+            else:
+                result.add_warning(t('env_cannot_read'))
+        else:
+            result.add_warning(t('env_no_process'))
+        return
+
+    # Linux environment variable audit
     _, pgrep_output, _ = run_command([
         'pgrep', '-f', 'openclaw-gateway'
     ], check=False)
@@ -992,6 +1681,7 @@ def main():
     audit_dlp(result)
     audit_skill_trust(result)
     audit_skill_integrity(result)
+    audit_vulnerability_check(result, current_ver)
     audit_disaster_recovery(result)
 
     summary = result.get_summary()
