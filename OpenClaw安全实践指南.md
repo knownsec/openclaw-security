@@ -1,4 +1,4 @@
-# OpenClaw 安全实践指南 v1.8
+# OpenClaw 安全实践指南 v2.0
 
 > **适用场景**：OpenClaw 拥有目标机器高权限，安装各种 Skill / MCP / Tool 等扩展，追求能力最大化。
 

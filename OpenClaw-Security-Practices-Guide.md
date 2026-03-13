@@ -1,4 +1,4 @@
-# OpenClaw Security Practices Guide v1.8
+# OpenClaw Security Practices Guide v2.0
 
 > **Applicable Scenario**: OpenClaw has elevated privileges on the target machine, installs various extensions such as Skills / MCPs / Tools, and aims to maximize capabilities.
 
